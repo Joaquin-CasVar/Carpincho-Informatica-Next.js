@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -22,7 +23,18 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <nav className="sticky h-16 flex items-center">
+          <Link href='/' className="m-2 p-2 border-2 rounded-2xl">
+            Home
+          </Link>
+          <Link href='/estadisticas' className="m-2 p-2 border-2 rounded-2xl">
+            Estadisticas
+          </Link>
+        </nav>
+
+        {children}
+      </body>
     </html>
   );
 }
