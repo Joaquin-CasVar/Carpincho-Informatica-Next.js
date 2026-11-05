@@ -92,3 +92,376 @@ export async function verificarAdministrador(token) {
 
 //listar usuarios
 
+export async function crearUsuario(datos) {
+  const token = sessionStorage.getItem('access');
+
+  if (!token) {
+    throw new Error('Tenés que iniciar sesión.');
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(datos),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      JSON.stringify(data)
+    );
+  }
+
+  return data;
+}
+
+
+//funcion para obtener el usuario desde admin GET
+export async function obtenerUsuario(id) {
+  const token = sessionStorage.getItem('access');
+
+  if (!token) {
+    throw new Error('Tenés que iniciar sesión.');
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/${id}/`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || 'No se pudo obtener el usuario'
+    );
+  }
+
+  return data;
+}
+
+
+// funcion para la edicion de usuario desde admin PATCH
+export async function editarUsuario(id, datos) {
+  const token = sessionStorage.getItem('access');
+
+  if (!token) {
+    throw new Error('Tenés que iniciar sesión.');
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/${id}/`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(datos),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      JSON.stringify(data)
+    );
+  }
+
+  return data;
+}
+
+
+//funcion para crear cliente 
+export async function crearCliente(datos) {
+  const token = sessionStorage.getItem('access');
+
+  if (!token) {
+    throw new Error('Tenés que iniciar sesión.');
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(datos),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(JSON.stringify(data));
+  }
+
+  return data;
+}
+
+
+
+//Obtener cliente desde admin GET 
+export async function obtenerCliente(id) {
+  const token = sessionStorage.getItem('access');
+
+  if (!token) {
+    throw new Error('Tenés que iniciar sesión.');
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/${id}/`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || 'No se pudo obtener el cliente'
+    );
+  }
+
+  return data;
+}
+
+
+//editar cliente desde admin PATCH
+export async function editarCliente(id, datos) {
+  const token = sessionStorage.getItem('access');
+
+  if (!token) {
+    throw new Error('Tenés que iniciar sesión.');
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/${id}/`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(datos),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      JSON.stringify(data)
+    );
+  }
+
+  return data;
+}
+
+
+
+//funcion para crear vendedor desde admin
+export async function crearVendedor(datos) {
+  const token = sessionStorage.getItem('access');
+
+  if (!token) {
+    throw new Error('Tenés que iniciar sesión.');
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/vendedores/`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(datos),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(JSON.stringify(data));
+  }
+
+  return data;
+}
+
+
+
+//obtener vendedor desde admin GET
+export async function obtenerVendedor(id) {
+  const token = sessionStorage.getItem('access');
+
+  if (!token) {
+    throw new Error('Tenés que iniciar sesión.');
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/vendedores/${id}/`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || 'No se pudo obtener el vendedor'
+    );
+  }
+
+  return data;
+}
+
+
+// Editar vendedor desde admin PATCH
+export async function editarVendedor(id, datos) {
+  const token = sessionStorage.getItem('access');
+
+  if (!token) {
+    throw new Error('Tenés que iniciar sesión.');
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/vendedores/${id}/`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(datos),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(JSON.stringify(data));
+  }
+
+  return data;
+}
+
+
+// verificar quien accede, si es admin o usuario 
+export async function listarUsuarios(pagina = 1) {
+  const token = sessionStorage.getItem('access');
+
+  if (!token) {
+    throw new Error('Tenés que iniciar sesión.');
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/?page=${pagina}`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || 'No se pudieron obtener los usuarios'
+    );
+  }
+
+  return data;
+}
+
+
+//listar clientes
+
+
+export async function listarClientes(pagina = 1) {
+  const token = sessionStorage.getItem('access');
+
+  if (!token) {
+    throw new Error('Tenés que iniciar sesión.');
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/?page=${pagina}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || 'No se pudieron obtener los clientes'
+    );
+  }
+
+  return data;
+}
+
+
+//listar vendedores
+
+export async function listarVendedores(pagina = 1) {
+  const token = sessionStorage.getItem('access');
+
+  if (!token) {
+    throw new Error('Tenés que iniciar sesión.');
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/vendedores/?page=${pagina}`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || 'No se pudieron obtener los vendedores'
+    );
+  }
+
+  return data;
+}
+
+
