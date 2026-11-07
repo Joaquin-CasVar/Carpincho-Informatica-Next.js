@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form"
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
 import BarChart from "../components/BarChart"
 import axios from "axios"
@@ -12,6 +13,8 @@ export default function page() {
   const [vendedores, setVendedores] = useState([])
   const [totalesVendedor, setTotalesVendedor] = useState([])
   const [ventasVendedor, setVentasVendedor] = useState([])
+
+  const router = useRouter();
 
   const date = new Date();
 
@@ -43,7 +46,7 @@ export default function page() {
   const fillGraphs = async (data) => {
     const token = sessionStorage.getItem('access')
 
-    if (!token) throw new Error('Authentication credentials were not provided.')
+    if (!token) router.push("/account/login")
 
     try {
       const response = await axios.post(
