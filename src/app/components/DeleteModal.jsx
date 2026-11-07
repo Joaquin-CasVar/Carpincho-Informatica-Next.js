@@ -9,9 +9,7 @@ export default function DeleteModal({ object, route, isOpen, onClose }) {
   const handleDelete = async () => {
     const token = sessionStorage.getItem('access')
 
-    if (!token) {
-      throw new Error('Authentication credentials were not provided.')
-    }
+    if (!token) router.push("/account/login")
 
     try {
       const response = await axios.delete(

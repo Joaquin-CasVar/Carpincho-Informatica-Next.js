@@ -78,9 +78,7 @@ export default function page() {
   const onSubmit = async () => {
     const token = sessionStorage.getItem('access')
 
-    if (!token) {
-      throw new Error('You do not have permission to perform this action')
-    }
+    if (!token) router.push("/account/login")
 
     setLoading(true)
 
