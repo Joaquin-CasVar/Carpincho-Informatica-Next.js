@@ -41,10 +41,19 @@ export default function page() {
   ]
 
   const fillGraphs = async (data) => {
+    const token = sessionStorage.getItem('access')
+
+    if (!token) throw new Error('Authentication credentials were not provided.')
+
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}ventas/estadisticas/`,
-        data
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       )
 
       const stats = response.data
