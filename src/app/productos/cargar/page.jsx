@@ -76,6 +76,12 @@ export default function page() {
 
 
   const onSubmit = async () => {
+    const token = sessionStorage.getItem('access')
+
+    if (!token) {
+      throw new Error('You do not have permission to perform this action')
+    }
+
     setLoading(true)
 
     const prodFormIsValid = await prodForm.trigger()
@@ -100,24 +106,44 @@ export default function page() {
       if (!producto) {
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}productos/`,
-          prodForm.getValues()
+          prodForm.getValues(),
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
         )
 
         // Cargo el producto y obtengo el id para la relacion con el detalle
         detailFormData.producto = response.data.id
         axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}${detailURL}/`,
-          detailFormData
+          detailFormData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
         )
       } else {
         axios.put(
           `${process.env.NEXT_PUBLIC_API_URL}productos/${producto.id}/`,
-          prodForm.getValues()
+          prodForm.getValues(),
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
         )
 
         axios.put(
           `${process.env.NEXT_PUBLIC_API_URL}${detailURL}/${detalle.id}/`,
-          detailFormData
+          detailFormData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
         )
         sessionStorage.removeItem('productosEditar')
       }

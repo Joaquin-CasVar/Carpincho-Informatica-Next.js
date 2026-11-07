@@ -7,15 +7,26 @@ export default function DeleteModal({ object, route, isOpen, onClose }) {
   const router = useRouter();
 
   const handleDelete = async () => {
+    const token = sessionStorage.getItem('access')
+
+    if (!token) {
+      throw new Error('Authentication credentials were not provided.')
+    }
+
     try {
-      axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URL}${route}/${object.id}/borrado_logico/`
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_URL}${route}/${object.id}/borrado_logico/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       )
+      router.push(`/${route}`)
+
     } catch (error) {
       console.error(`Codigo de error: ${error.status}. ${error.response.data.detail}`)
     }
-
-    router.push(`/${route}`)
   }
 
   if (!isOpen) return null
