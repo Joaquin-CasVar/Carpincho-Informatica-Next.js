@@ -1,56 +1,83 @@
-export default function GpuForm({ form }) {
-  const { register, formState: { errors } } = form
+'use client'
 
-  const memorias = [{ 'id': 1, 'nombre': 'GDDR7' }]
-  const chipsets = [{ 'id': 1, 'nombre': 'GeForce RTX 5090' }]
-  const refrigeraciones = [{ 'id': 3, 'nombre': '3 ventiladores' }]
+import { useEffect, useState } from "react"
+
+import { getTipos_memoria, getChipsets_gpu, getRefrigeraciones } from "@/lib/api"
+
+export default function GpuForm({ form, detalle }) {
+  const [tiposMemoria, setTiposMemoria] = useState([])
+  const [chipsets, setChipsets] = useState([])
+  const [refrigeraciones, setRefrigeraciones] = useState([])
+
+  const { register, setValue, reset, formState: { errors } } = form
+
+  useEffect(() => {
+    const initializeForm = async () => {
+      try {
+        setTiposMemoria(await getTipos_memoria())
+        setChipsets(await getChipsets_gpu())
+        setRefrigeraciones(await getRefrigeraciones())
+
+        if (detalle) {
+          reset(detalle)
+          setValue("tipo_memoria", detalle.tipo_memoria.id);
+          setValue("chipset", detalle.chipset.id);
+          setValue("refrigeracion", detalle.refrigeracion.id);
+        }
+      } catch (error) {
+        console.error("Error loading form data:", error);
+      }
+    };
+
+    initializeForm();
+  }, []);
 
   return (
     <form>
       <div className='mt-10 grid grid-cols-3 gap-3'>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Tipo de Memoria<label className='text-sm text-red-800 animate-pulse'>{errors.memoriaId && "*" + errors.memoriaId.message}</label></p>
+          <p className='text-zinc-400 text-lg'>Tipo de Memoria<label className='text-sm text-red-800 animate-pulse'>{errors.tipo_memoria && "*" + errors.tipo_memoria.message}</label></p>
           <select
             className='cursor-pointer p-2 border border-zinc-600 rounded-md my-4'
-            {...register("memoriaId", { valueAsNumber: true })}
+            {...register("tipo_memoria", { valueAsNumber: true })}
           >
 
             <option value={0} disabled={true} >Seleccionar tipo de memoria</option>
 
-            {memorias.map((memoria) => (
-              <option key={memoria.id} value={memoria.id}>{memoria.nombre}</option>
-            ))} 
+            {tiposMemoria.map((tipo) => (
+              <option key={tipo.id} value={tipo.id}>{tipo.nombre}</option>
+            ))}
           </select>
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>GPU (Chipset)<label className='text-sm text-red-800 animate-pulse'>{errors.chipsetId && "*" + errors.chipsetId.message}</label></p>
+          <p className='text-zinc-400 text-lg'>GPU (Chipset)<label className='text-sm text-red-800 animate-pulse'>{errors.chipset && "*" + errors.chipset.message}</label></p>
           <select
             className='cursor-pointer p-2 border border-zinc-600 rounded-md my-4'
-            {...register("chipsetId", { valueAsNumber: true })}
+            {...register("chipset", { valueAsNumber: true })}
           >
 
             <option value={0} disabled={true} >Seleccionar GPU (Chipset)</option>
 
             {chipsets.map((chipset) => (
               <option key={chipset.id} value={chipset.id}>{chipset.nombre}</option>
-            ))} 
+            ))}
           </select>
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Refrigeración<label className='text-sm text-red-800 animate-pulse'>{errors.refrigeracionId && "*" + errors.refrigeracionId.message}</label></p>
+          <p className='text-zinc-400 text-lg'>Refrigeración<label className='text-sm text-red-800 animate-pulse'>{errors.refrigeracion && "*" + errors.refrigeracion.message}</label></p>
           <select
             className='cursor-pointer p-2 border border-zinc-600 rounded-md my-4'
-            {...register("refrigeracionId", { valueAsNumber: true })}
+            {...register("refrigeracion", { valueAsNumber: true })}
           >
 
             <option value={0} disabled={true} >Seleccionar Refrigeración</option>
 
             {refrigeraciones.map((refrigeracion) => (
               <option key={refrigeracion.id} value={refrigeracion.id}>{refrigeracion.nombre}</option>
-            ))} 
+            ))}
           </select>
         </div>
 

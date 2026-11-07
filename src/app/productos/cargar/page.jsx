@@ -1,11 +1,15 @@
 "use client"
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 
 import ProductoForm from "@/app/components/producto/forms/ProductoForm";
 import CpuForm from "@/app/components/producto/forms/CpuForm";
 import GpuForm from "@/app/components/producto/forms/GpuForm";
+
 import { productoSchema } from "@/app/validations/productoSchema";
 import { cpuSchema } from "@/app/validations/cpuSchema";
 import { gpuSchema } from "@/app/validations/gpuSchema";
@@ -13,32 +17,31 @@ import { gpuSchema } from "@/app/validations/gpuSchema";
 export default function page() {
   const producto = JSON.parse(sessionStorage.getItem('productosEditar'))
   const detalle = producto?.detalle_componente
-  sessionStorage.removeItem('productosEditar')
 
+  const [loading, setLoading] = useState(false)
+
+  const router = useRouter();
+  
   const prodForm = useForm({
     resolver: zodResolver(productoSchema),
     defaultValues: producto ? {
       "nombre": producto.nombre,
       "precio": producto.precio,
       "stock": producto.stock,
-      "fabricanteId": producto.fabricante.id,
-      "colorId": producto.color.id,
-      "tipoId": producto.tipo.id,
       "imagen": producto.imagen,
     } : {
-      "fabricanteId": 0,
-      "colorId": 0,
-      "tipoId": 0,
+      "fabricante": 0,
+      "color": 0,
+      "tipo": 0,
     }
   })
 
-  const type = prodForm.watch('tipoId')
+  const type = prodForm.watch('tipo')
 
   const cpuForm = useForm({
     resolver: zodResolver(cpuSchema),
     defaultValues: (detalle && type === 1) ? {
-      "arquitecturaId": detalle.arquitectura.id,
-      "socketId": detalle.socket.id,
+      'producto': detalle.producto,
       "cant_nucleos": detalle.cant_nucleos,
       "velocidad_reloj": detalle.velocidad_reloj,
       "velocidad_boost": detalle.velocidad_boost,
@@ -47,17 +50,16 @@ export default function page() {
       "graficos_integrados": detalle.graficos_integrados,
       "incluye_cooler": detalle.incluye_cooler,
     } : {
-      "arquitecturaId": 0,
-      "socketId": 0,
+      'producto': 0,
+      "arquitectura": 0,
+      "socket": 0,
     }
   })
 
   const gpuForm = useForm({
     resolver: zodResolver(gpuSchema),
     defaultValues: (detalle && type === 2) ? {
-      "memoriaId": detalle.memoria.id,
-      "chipsetId": detalle.chipset.id,
-      "refrigeracionId": detalle.refrigeracion.id,
+      'producto': detalle.producto,
       "memoria": detalle.memoria,
       "velocidad_reloj": detalle.velocidad_reloj,
       "velocidad_boost": detalle.velocidad_boost,
@@ -65,41 +67,82 @@ export default function page() {
       "tdp": detalle.tdp,
       "ancho_slots": detalle.ancho_slots,
     } : {
-      "memoriaId": 0,
-      "chipsetId": 0,
-      "refrigeracionId": 0,
+      'producto': 0,
+      "tipo_memoria": 0,
+      "chipset": 0,
+      "refrigeracion": 0,
     }
   })
 
 
   const onSubmit = async () => {
+    setLoading(true)
+
     const prodFormIsValid = await prodForm.trigger()
 
     let detailFormIsValid = true
     let detailFormData = {}
+    let detailURL = ''
 
     if (type === 1) {
       detailFormIsValid = await cpuForm.trigger()
       detailFormData = cpuForm.getValues()
+      detailURL = 'cpus'
     } else if (type === 2) {
       detailFormIsValid = await gpuForm.trigger()
       detailFormData = gpuForm.getValues()
+      detailURL = 'gpus'
     }
 
     if (!prodFormIsValid || !detailFormIsValid) return;
 
-    console.log(prodForm.getValues());
-    console.log(detailFormData);
+    try {
+      if (!producto) {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}productos/`,
+          prodForm.getValues()
+        )
+
+        // Cargo el producto y obtengo el id para la relacion con el detalle
+        detailFormData.producto = response.data.id
+        axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}${detailURL}/`,
+          detailFormData
+        )
+      } else {
+        axios.put(
+          `${process.env.NEXT_PUBLIC_API_URL}productos/${producto.id}/`,
+          prodForm.getValues()
+        )
+
+        axios.put(
+          `${process.env.NEXT_PUBLIC_API_URL}${detailURL}/${detalle.id}/`,
+          detailFormData
+        )
+        sessionStorage.removeItem('productosEditar')
+      }
+    } catch (error) {
+      console.error(`Codigo de error: ${error.status}. ${error.response.data.detail}`)
+
+    } finally {
+      setLoading(false)
+      router.push(`/productos/${detailFormData.producto}`)
+    }
   }
 
   return (
     <div>
       <h1 className="text-9xl">Cargar Producto</h1>
 
+      {loading &&
+        <svg width="32" height="32" fill="currentColor" className="bi bi-circle-half animate-spin" viewBox="0 0 16 16">
+          <path d="M8 15A7 7 0 1 0 8 1zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16" />
+        </svg>
+      }
 
-      <ProductoForm form={prodForm} />
-      {type === 1 && <CpuForm form={cpuForm} />}
-      {type === 2 && <GpuForm form={gpuForm} />}
+      <ProductoForm form={prodForm} producto={producto} />
+      {type === 1 && <CpuForm form={cpuForm} detalle={detalle} />}
+      {type === 2 && <GpuForm form={gpuForm} detalle={detalle} />}
 
       <button type='button' onClick={onSubmit} className='bg-blue-500 text-white p-2 rounded-md'>Save</button>
     </div>

@@ -1,18 +1,43 @@
-export default function CpuForm({ form }) {
-  const { register, formState: { errors } } = form
+'use client'
 
-  const arquitecturas = [{ 'id': 1, 'nombre': 'Zen 5' }]
-  const sockets = [{ 'id': 1, 'nombre': 'AM5', }]
+import { useEffect, useState } from "react"
+
+import { getArquitecturas, getSockets } from "@/lib/api"
+
+export default function CpuForm({ form, detalle }) {
+  const [arquitecturas, setArquitecturas] = useState([])
+  const [sockets, setSockets] = useState([])
+
+  const { register, setValue, reset, formState: { errors } } = form
+
+  useEffect(() => {
+    const initializeForm = async () => {
+      try {
+        setArquitecturas(await getArquitecturas())
+        setSockets(await getSockets())
+
+        if (detalle) {
+          reset(detalle)
+          setValue("arquitectura", detalle.arquitectura.id);
+          setValue("socket", detalle.socket.id);
+        }
+      } catch (error) {
+        console.error("Error loading form data:", error);
+      }
+    };
+
+    initializeForm();
+  }, []);
 
   return (
     <form>
       <div className='mt-10 grid grid-cols-3 gap-3'>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Arquitectura<label className='text-sm text-red-800 animate-pulse'>{errors.arquitecturaId && "*" + errors.arquitecturaId.message}</label></p>
+          <p className='text-zinc-400 text-lg'>Arquitectura<label className='text-sm text-red-800 animate-pulse'>{errors.arquitectura && "*" + errors.arquitectura.message}</label></p>
           <select
             className='cursor-pointer p-2 border border-zinc-600 rounded-md my-4'
-            {...register("arquitecturaId", { valueAsNumber: true })}
+            {...register("arquitectura", { valueAsNumber: true })}
           >
 
             <option value={0} disabled={true} >Seleccionar Arquitectura</option>
@@ -24,10 +49,10 @@ export default function CpuForm({ form }) {
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Socket<label className='text-sm text-red-800 animate-pulse'>{errors.socketId && "*" + errors.socketId.message}</label></p>
+          <p className='text-zinc-400 text-lg'>Socket<label className='text-sm text-red-800 animate-pulse'>{errors.socket && "*" + errors.socket.message}</label></p>
           <select
             className='cursor-pointer p-2 border border-zinc-600 rounded-md my-4'
-            {...register("socketId", { valueAsNumber: true })}
+            {...register("socket", { valueAsNumber: true })}
           >
 
             <option value={0} disabled={true} >Seleccionar Socket</option>

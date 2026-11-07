@@ -10,10 +10,10 @@ export const productoSchema = z.object({
     stock: z.number('El stock es obligatorio')
         .int('El stock debe ser un numero entero')
         .nonnegative('El stock debe ser un numero positivo ó 0'),
-    fabricanteId: z.int()
+    fabricante: z.int()
         .min(1, 'Debe seleccionar un fabricante'),
-    colorId: z.int()
+    color: z.int()
         .min(1, 'Debe seleccionar un color'),
-    tipoId: z.int()
+    tipo: z.int()
         .min(1, 'Debe seleccionar un tipo de producto'),
 })

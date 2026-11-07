@@ -44,7 +44,7 @@ export default function page() {
       })
 
     } catch (error) {
-      console.error(error)
+      console.error(`Codigo de error: ${error.status}. ${error.response.data.detail}`)
 
     } finally {
       setLoading(false)
@@ -67,7 +67,7 @@ export default function page() {
       <div className="flex min-h-screen">
         <Aside filters={filters} setFilters={setFilters} />
 
-        <div className="px-4">
+        <div className="px-4 w-full">
           <div className="flex justify-between items-center pt-4">
             <div className="flex items-center">
               <button

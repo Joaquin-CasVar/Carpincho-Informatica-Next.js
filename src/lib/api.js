@@ -7,8 +7,9 @@ export const ENDPOINTS = {
     arquitecturas: 'arquitecturas/',
     sockets: 'sockets/',
     chipsets_gpu: 'chipsets-gpu/',
+    tipos_memoria: 'tipos-memoria/',
+    refrigeraciones: 'refrigeraciones/',
 }
-
 async function list(path) {
     let page = 1;
     let all = []
@@ -23,9 +24,11 @@ async function list(path) {
     }
 }
 
-export const getFabricantes= () => list(ENDPOINTS.fabricantes)
-export const getColores= () => list(ENDPOINTS.colores)
-export const getTipos_producto= () => list(ENDPOINTS.tipos_producto)
-export const getArquitecturas= () => list(ENDPOINTS.arquitecturas)
-export const getSockets= () => list(ENDPOINTS.sockets)
-export const getChipsets_gpu= () => list(ENDPOINTS.chipsets_gpu)
+export const getFabricantes = () => list(ENDPOINTS.fabricantes)
+export const getColores = () => list(ENDPOINTS.colores)
+export const getTipos_producto = () => list(ENDPOINTS.tipos_producto)
+export const getArquitecturas = () => list(ENDPOINTS.arquitecturas)
+export const getSockets = () => list(ENDPOINTS.sockets)
+export const getChipsets_gpu = () => list(ENDPOINTS.chipsets_gpu)
+export const getTipos_memoria = () => list(ENDPOINTS.tipos_memoria)
+export const getRefrigeraciones = () => list(ENDPOINTS.refrigeraciones)

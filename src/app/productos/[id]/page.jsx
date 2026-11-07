@@ -1,7 +1,6 @@
 'use client'
 
 import axios from "axios"
-import Image from "next/image"
 import { use, useEffect, useState } from "react"
 
 import CpuSpecs from "@/app/components/producto/CpuSpecs"
@@ -22,7 +21,7 @@ export default function page({ params }) {
       setProducto(response.data)
 
     } catch (error) {
-      console.error(error)
+      console.error(`Codigo de error: ${error.status}. ${error.response.data.detail}`)
 
     } finally {
       setLoading(false)
@@ -38,7 +37,7 @@ export default function page({ params }) {
       <h1 className="text-9xl">Detalle del Producto</h1>
 
       <section className="my-8 p-6 rounded-lg flex justify-around bg-zinc-800">
-        {producto.imagen && <Image src={producto.imagen} alt="Imagen del producto" width={100} height={100} />}
+        {producto.imagen !== '' && <img src={producto.imagen} alt="Imagen del producto" className="w-40" /> }
 
         <div>
           <p>{producto.tipo?.tipo} {producto.fabricante?.nombre} {producto.nombre}</p>
@@ -55,9 +54,15 @@ export default function page({ params }) {
           <p>Fabricante {producto.fabricante?.nombre}</p>
           <p>Color {producto.color?.nombre}</p>
 
-          {producto.tipo?.tipo === 'CPU' && <CpuSpecs specs={producto.detalle_componente} />}
-          {producto.tipo?.tipo === 'GPU' && <GpuSpecs specs={producto.detalle_componente} />}
+          {(producto.tipo?.tipo === 'CPU' && producto.detalle_componente !== 'No hay detalle') &&
+            <CpuSpecs specs={producto.detalle_componente} />
+          }
 
+          {(producto.tipo?.tipo === 'GPU' && producto.detalle_componente !== 'No hay detalle') &&
+            <GpuSpecs specs={producto.detalle_componente} />
+          }
+
+          {producto.detalle_componente === 'No hay detalle' && <p>Error al cargar los detalles</p>}
         </div>
       </section>
     </div>

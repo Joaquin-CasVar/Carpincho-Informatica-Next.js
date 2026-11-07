@@ -1,19 +1,35 @@
-export default function ProductoForm({ form }) {
-  const { register, formState: { errors } } = form
+'use client'
 
-  const fabricantes = [{ 'id': 1, 'nombre': 'AMD' }]
-  const colores = [{ 'id': 1, 'nombre': 'Negro' }]
+import { useEffect, useState } from "react"
 
-  const tipos = [
-    {
-      'id': 1,
-      'tipo': 'CPU'
-    },
-    {
-      'id': 2,
-      'tipo': 'GPU'
-    }
-  ]
+import { getFabricantes, getColores, getTipos_producto } from "@/lib/api"
+
+export default function ProductoForm({ form, producto }) {
+  const [fabricantes, setFabricantes] = useState([])
+  const [colores, setColores] = useState([])
+  const [tipos, setTipos] = useState([])
+
+  const { register, setValue, formState: { errors } } = form
+
+  useEffect(() => {
+    const initializeForm = async () => {
+      try {
+        setFabricantes(await getFabricantes());
+        setColores(await getColores());
+        setTipos(await getTipos_producto());
+
+        if (producto) {
+          setValue("fabricante", producto.fabricante.id);
+          setValue("color", producto.color.id);
+          setValue("tipo", producto.tipo.id);
+        }
+      } catch (error) {
+        console.error("Error loading form data:", error);
+      }
+    };
+
+    initializeForm();
+  }, []);
 
   return (
 
@@ -55,10 +71,10 @@ export default function ProductoForm({ form }) {
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Fabricante <label className='text-sm text-red-800 animate-pulse'>{errors.fabricanteId && "*" + errors.fabricanteId.message}</label></p>
+          <p className='text-zinc-400 text-lg'>Fabricante <label className='text-sm text-red-800 animate-pulse'>{errors.fabricante && "*" + errors.fabricante.message}</label></p>
           <select
             className='cursor-pointer p-2 border border-zinc-600 rounded-md my-4'
-            {...register("fabricanteId", { valueAsNumber: true })}
+            {...register("fabricante", { valueAsNumber: true })}
           >
 
             <option value={0} disabled={true} >Seleccionar Fabricante</option>
@@ -70,10 +86,10 @@ export default function ProductoForm({ form }) {
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Color <label className='text-sm text-red-800 animate-pulse'>{errors.colorId && "*" + errors.colorId.message}</label></p>
+          <p className='text-zinc-400 text-lg'>Color <label className='text-sm text-red-800 animate-pulse'>{errors.color && "*" + errors.color.message}</label></p>
           <select
             className='cursor-pointer p-2 border border-zinc-600 rounded-md my-4'
-            {...register("colorId", { valueAsNumber: true })}
+            {...register("color", { valueAsNumber: true })}
           >
 
             <option value={0} disabled={true} >Seleccionar Color</option>
@@ -85,10 +101,10 @@ export default function ProductoForm({ form }) {
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Tipo <label className='text-sm text-red-800 animate-pulse'>{errors.tipoId && "*" + errors.tipoId.message}</label></p>
+          <p className='text-zinc-400 text-lg'>Tipo <label className='text-sm text-red-800 animate-pulse'>{errors.tipo && "*" + errors.tipo.message}</label></p>
           <select
             className='cursor-pointer p-2 border border-zinc-600 rounded-md my-4'
-            {...register("tipoId", { valueAsNumber: true })}
+            {...register("tipo", { valueAsNumber: true })}
           >
 
             <option value={0} disabled={true} >Seleccionar Tipo</option>

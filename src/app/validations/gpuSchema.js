@@ -1,11 +1,11 @@
 import z from "zod";
 
 export const gpuSchema = z.object({
-    memoriaId: z.int()
+    tipo_memoria: z.int()
         .min(1, 'Debe seleccionar un tipo de memoria'),
-    chipsetId: z.int()
+    chipset: z.int()
         .min(1, 'Debe seleccionar una GPU (chipset)'),
-    refrigeracionId: z.int()
+    refrigeracion: z.int()
         .min(1, 'Debe seleccionar un tipo de refrigeración'),
     memoria: z.number('La memoria es obligatoria')
         .int('La memoria debe ser un numero entero')

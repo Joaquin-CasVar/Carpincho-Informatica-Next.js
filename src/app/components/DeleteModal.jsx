@@ -1,12 +1,19 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import axios from "axios"
 
 export default function DeleteModal({ object, route, isOpen, onClose }) {
   const router = useRouter();
 
-  const handleDelete = () => {
-    console.log('borrado logico en la API');
+  const handleDelete = async () => {
+    try {
+      axios.delete(
+        `${process.env.NEXT_PUBLIC_API_URL}${route}/${object.id}/borrado_logico/`
+      )
+    } catch (error) {
+      console.error(`Codigo de error: ${error.status}. ${error.response.data.detail}`)
+    }
 
     router.push(`/${route}`)
   }

@@ -1,9 +1,9 @@
 import z from "zod";
 
 export const cpuSchema = z.object({
-    arquitecturaId: z.int()
+    arquitectura: z.int()
         .min(1, 'Debe seleccionar una arquitectura'),
-    socketId: z.int()
+    socket: z.int()
         .min(1, 'Debe seleccionar un socket'),
     cant_nucleos: z.number('Los nucleos son obligatorios')
         .int('Los nucleos deben ser un numero entero')
