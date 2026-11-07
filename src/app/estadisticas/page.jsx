@@ -1,21 +1,30 @@
 "use client"
 
 import { useForm } from "react-hook-form"
+import { useEffect, useState } from "react"
 
 import { getStats } from "@/lib/stats"
 import BarChart from "../components/BarChart"
+import axios from "axios"
 
 export default function page() {
-  const estadisticas = getStats()
+  const [totalesMensuales, setTotalesMensuales] = useState([])
+  const [ventasMensuales, setVentasMensuales] = useState([])
+  const [vendedores, setVendedores] = useState([])
+  const [totalesVendedor, setTotalesVendedor] = useState([])
+  const [ventasVendedor, setVentasVendedor] = useState([])
 
   const date = new Date();
 
-  const { register, handleSubmit } = useForm({
+  // Por defecto se muestran estadisticas del año y mes actual
+  const queryForm = useForm({
     defaultValues: {
-      'month': date.getMonth() + 1,
       'year': date.getFullYear(),
+      'month': date.getMonth() + 1,
     }
   })
+
+  const { register, handleSubmit } = queryForm
 
   const monthArray = [
     'Enero',
@@ -32,26 +41,52 @@ export default function page() {
     'Diciembre'
   ]
 
-  // Array con vendedor y su total de venta del mes
-  const vendedores = estadisticas.salesman_month_totals.map((vendedor) => {
-    // Armo otro array con los nombres de los vendedores para etiquetar los graficos
-    return vendedor[0]
-  })
+  const fillGraphs = async (data) => {
+    // const response = getStats()
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}ventas/estadisticas/`,
+        data
+      )
 
-  const month_totals = estadisticas.salesman_month_totals.map((totales) => {
-    // Armo otro array con los totales de venta, son los datos de un grafico
-    return totales[1]
-  })
+      const stats = response.data
+      
+      console.log('query:', queryForm.getValues());
 
-  const month_sales = estadisticas.salesman_month_sales.map((ventas) => {
-    // Armo otro array con la cantidad de ventas, son los datos del otro grafico
-    return ventas[1]
-  })
+      setTotalesMensuales(stats.monthly_totals)
+      setVentasMensuales(stats.monthly_sales)
+
+      // Array con vendedor y su total de venta del mes
+      setVendedores(
+        stats.salesman_month_totals.map((vendedor) => {
+          // Armo otro array con los nombres de los vendedores para etiquetar los graficos
+          return vendedor[0]
+        })
+      )
+      setTotalesVendedor(
+        stats.salesman_month_totals.map((totales) => {
+          // Armo otro array con los totales de venta, son los datos de un grafico
+          return totales[1]
+        })
+      )
+      setVentasVendedor(
+        stats.salesman_month_sales.map((ventas) => {
+          // Armo otro array con la cantidad de ventas, son los datos del otro grafico
+          return ventas[1]
+        })
+      )
+    } catch (error) {
+      console.error(`Codigo de error: ${error.status}. ${error.response.data.detail}`)
+    }
+  }
 
   const onSubmit = async (data) => {
-    console.log(data);
-
+    fillGraphs(data)
   }
+
+  useEffect(() => {
+    fillGraphs(queryForm.getValues())
+  }, [])
 
   return (
     <div>
@@ -77,7 +112,7 @@ export default function page() {
         <BarChart
           barLabels={monthArray}
           dataLabel={'$/mes'}
-          data={estadisticas.monthly_totals}
+          data={totalesMensuales}
           lineColor={'68.5% 0.169 237.323'}
           title={"Total de venta mensual"}
           axis={'x'}
@@ -86,7 +121,7 @@ export default function page() {
         <BarChart
           barLabels={monthArray}
           dataLabel={'ventas/mes'}
-          data={estadisticas.monthly_sales}
+          data={ventasMensuales}
           lineColor={'62.7% 0.194 149.214'}
           title={"Numero de ventas mensual"}
           axis={'x'}
@@ -114,7 +149,7 @@ export default function page() {
         <BarChart
           barLabels={vendedores}
           dataLabel={'$/vendedor'}
-          data={month_totals}
+          data={totalesVendedor}
           lineColor={'49.6% 0.265 301.924'}
           title={'Total por vendedor'}
           axis={'y'}
@@ -123,7 +158,7 @@ export default function page() {
         <BarChart
           barLabels={vendedores}
           dataLabel={'ventas/vendedor'}
-          data={month_sales}
+          data={ventasVendedor}
           lineColor={'64.6% 0.222 41.116'}
           title={'Numero de ventas por vendedor'}
           axis={'y'}
