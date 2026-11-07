@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form"
 import { useEffect, useState } from "react"
 
-import { getStats } from "@/lib/stats"
 import BarChart from "../components/BarChart"
 import axios from "axios"
 
@@ -42,7 +41,6 @@ export default function page() {
   ]
 
   const fillGraphs = async (data) => {
-    // const response = getStats()
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}ventas/estadisticas/`,
