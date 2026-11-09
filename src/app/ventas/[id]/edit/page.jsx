@@ -1,152 +1,181 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ventaSchema } from "@/validations/ventaSchema";
-import { editarVenta } from "@/lib/ventasService";
-import { aplicarErroresApi } from "@/lib/apiErrors";
-import { ventasEjemplo } from "@/data/ventasEjemplo";
-import {
-  clientesEjemplo,
-  vendedoresEjemplo,
-  metodosPagoEjemplo,
-} from "@/data/opcionesEjemplo";
-
-const CAMPOS = ["cliente", "vendedor", "metodo_pago", "fecha"];
-const inputClassName =
-  "rounded-md border border-black/20 bg-background p-2 text-foreground dark:border-white/30";
+import { ventaSchema } from "@/schemas/ventaSchema";
+import { editarVenta, obtenerVenta } from "@/lib/api";
 
 export default function EditarVentaPage({ params }) {
   // En un Client Component, params es una Promise y se lee con use()
   const { id } = use(params);
   const router = useRouter();
 
-  const venta = ventasEjemplo.find((v) => String(v.id) === id);
+  const [cargando, setCargando] = useState(true);
+  const [noEncontrada, setNoEncontrada] = useState(false);
+  const [error, setError] = useState("");
+  const [errorAPI, setErrorAPI] = useState("");
 
   const {
     register,
     handleSubmit,
-    setError,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(ventaSchema),
     defaultValues: {
-      cliente: venta?.cliente ?? "",
-      vendedor: venta?.vendedor ?? "",
-      metodo_pago: venta?.metodo_pago ?? "",
-      fecha: venta?.fecha ?? "",
+      cliente: "",
+      vendedor: "",
+      metodo_pago: "",
+      fecha: "",
     },
   });
 
-  if (!venta) {
-    notFound();
-  }
+  // Trae la venta de la API y completa el formulario con sus datos
+  useEffect(() => {
+    let cancelado = false;
+
+    async function cargarVenta() {
+      try {
+        const venta = await obtenerVenta(id);
+
+        if (cancelado) return;
+
+        reset({
+          cliente: venta.cliente,
+          vendedor: venta.vendedor,
+          metodo_pago: venta.metodo_pago,
+          fecha: venta.fecha,
+        });
+      } catch (err) {
+        if (cancelado) return;
+
+        if (err.status === 404) {
+          setNoEncontrada(true);
+        } else {
+          setError(err.message);
+        }
+      } finally {
+        if (!cancelado) {
+          setCargando(false);
+        }
+      }
+    }
+
+    cargarVenta();
+
+    return () => {
+      cancelado = true;
+    };
+  }, [id, reset]);
 
   const onSubmit = async (data) => {
+    setErrorAPI("");
+
     try {
-      await editarVenta(venta.id, data);
-      router.push(`/ventas/${venta.id}`);
-    } catch (error) {
-      aplicarErroresApi(error.response?.data, setError, CAMPOS);
+      await editarVenta(id, data);
+      router.push(`/ventas/${id}`);
+    } catch (err) {
+      setErrorAPI(err.message);
     }
   };
 
+  if (noEncontrada) {
+    notFound();
+  }
+
+  if (cargando) {
+    return <p>Cargando venta...</p>;
+  }
+
+  if (error) {
+    return (
+      <p role="alert">
+        {error}
+      </p>
+    );
+  }
+
   return (
-    <section className="flex flex-col gap-6">
-      <Link
-        href={`/ventas/${venta.id}`}
-        className="self-start text-zinc-600 transition-colors hover:text-foreground dark:text-zinc-400"
-      >
+    <section>
+      <Link href={`/ventas/${id}`}>
         ← Volver a la venta
       </Link>
 
-      <h2 className="text-2xl font-semibold">Editar venta #{venta.id}</h2>
+      <h2>Editar venta #{id}</h2>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex max-w-xl flex-col gap-4"
+        noValidate
       >
-        <div className="flex flex-col gap-1">
-          <label htmlFor="cliente" className="font-medium">
-            Cliente
+        {/* TODO: select de clientes, vendedores y métodos de pago (ver create) */}
+        <div>
+          <label htmlFor="cliente">
+            Cliente (ID)
           </label>
-          <select id="cliente" className={inputClassName} {...register("cliente")}>
-            <option value="">Seleccioná un cliente</option>
-            {clientesEjemplo.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nombre}
-              </option>
-            ))}
-          </select>
+          <input
+            id="cliente"
+            type="number"
+            {...register("cliente")}
+          />
           {errors.cliente && (
-            <p className="text-sm text-red-500">{errors.cliente.message}</p>
+            <p>{errors.cliente.message}</p>
           )}
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label htmlFor="vendedor" className="font-medium">
-            Vendedor
+        <div>
+          <label htmlFor="vendedor">
+            Vendedor (ID)
           </label>
-          <select id="vendedor" className={inputClassName} {...register("vendedor")}>
-            <option value="">Seleccioná un vendedor</option>
-            {vendedoresEjemplo.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.nombre}
-              </option>
-            ))}
-          </select>
+          <input
+            id="vendedor"
+            type="number"
+            {...register("vendedor")}
+          />
           {errors.vendedor && (
-            <p className="text-sm text-red-500">{errors.vendedor.message}</p>
+            <p>{errors.vendedor.message}</p>
           )}
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label htmlFor="metodo_pago" className="font-medium">
-            Método de pago
+        <div>
+          <label htmlFor="metodo_pago">
+            Método de pago (ID)
           </label>
-          <select
+          <input
             id="metodo_pago"
-            className={inputClassName}
+            type="number"
             {...register("metodo_pago")}
-          >
-            <option value="">Seleccioná un método de pago</option>
-            {metodosPagoEjemplo.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.nombre}
-              </option>
-            ))}
-          </select>
+          />
           {errors.metodo_pago && (
-            <p className="text-sm text-red-500">{errors.metodo_pago.message}</p>
+            <p>{errors.metodo_pago.message}</p>
           )}
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label htmlFor="fecha" className="font-medium">
+        <div>
+          <label htmlFor="fecha">
             Fecha
           </label>
           <input
             id="fecha"
             type="date"
-            className={inputClassName}
             {...register("fecha")}
           />
           {errors.fecha && (
-            <p className="text-sm text-red-500">{errors.fecha.message}</p>
+            <p>{errors.fecha.message}</p>
           )}
         </div>
 
-        {errors.root?.server && (
-          <p className="text-sm text-red-500">{errors.root.server.message}</p>
+        {errorAPI && (
+          <p role="alert">
+            {errorAPI}
+          </p>
         )}
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-full bg-foreground px-6 py-3 font-medium text-background transition-opacity hover:opacity-80 disabled:opacity-50"
         >
           {isSubmitting ? "Guardando..." : "Guardar cambios"}
         </button>

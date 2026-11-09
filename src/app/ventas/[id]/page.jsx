@@ -1,144 +1,250 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import VentaDetail from "@/components/VentaDetail";
-import { detalleVentaSchema } from "@/validations/ventaSchema";
-import { crearDetalle, editarDetalle } from "@/lib/ventasService";
-import { aplicarErroresApi } from "@/lib/apiErrors";
-import { ventasEjemplo } from "@/data/ventasEjemplo";
-import { productosEjemplo } from "@/data/opcionesEjemplo";
+import { detalleVentaSchema } from "@/schemas/ventaSchema";
+import {
+  borrarVenta,
+  crearDetalle,
+  editarDetalle,
+  listarProductos,
+  obtenerVenta,
+} from "@/lib/api";
 
-const CAMPOS = ["producto", "cantidad"];
 const VACIO = { producto: "", cantidad: 1 };
-const inputClassName =
-  "rounded-md border border-black/20 bg-background p-2 text-foreground dark:border-white/30";
 
 export default function VentaDetallePage({ params }) {
   // En un Client Component, params es una Promise y se lee con use()
   const { id } = use(params);
+  const router = useRouter();
 
-  const [detalleEnEdicion, setDetalleEnEdicion] = useState(null);
+  const [venta, setVenta] = useState(null);
+  const [productos, setProductos] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [noEncontrada, setNoEncontrada] = useState(false);
+  const [error, setError] = useState("");
+  const [errorAPI, setErrorAPI] = useState("");
   const [mensaje, setMensaje] = useState("");
+  // Se incrementa para volver a pedir la venta a la API después de guardar
+  const [version, setVersion] = useState(0);
+  const [detalleEnEdicion, setDetalleEnEdicion] = useState(null);
 
   const {
     register,
     handleSubmit,
     reset,
-    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(detalleVentaSchema),
     defaultValues: VACIO,
   });
 
-  const venta = ventasEjemplo.find((v) => String(v.id) === id);
+  // Productos para el select y para mostrar sus nombres en la tabla
+  useEffect(() => {
+    let cancelado = false;
 
-  if (!venta) {
-    notFound();
-  }
+    async function cargarProductos() {
+      try {
+        const lista = await listarProductos();
+
+        if (!cancelado) {
+          setProductos(lista);
+        }
+      } catch {
+        // si falla, la tabla muestra "Producto #id" y el select queda vacío
+      }
+    }
+
+    cargarProductos();
+
+    return () => {
+      cancelado = true;
+    };
+  }, []);
+
+  // Venta con sus detalles
+  useEffect(() => {
+    let cancelado = false;
+
+    async function cargarVenta() {
+      try {
+        const data = await obtenerVenta(id);
+
+        if (!cancelado) {
+          setVenta(data);
+          setError("");
+        }
+      } catch (err) {
+        if (cancelado) return;
+
+        if (err.status === 404) {
+          setNoEncontrada(true);
+        } else {
+          setError(err.message);
+        }
+      } finally {
+        if (!cancelado) {
+          setCargando(false);
+        }
+      }
+    }
+
+    cargarVenta();
+
+    return () => {
+      cancelado = true;
+    };
+  }, [id, version]);
 
   const handleEditar = (detalle) => {
     setMensaje("");
+    setErrorAPI("");
     setDetalleEnEdicion(detalle);
     reset({ producto: detalle.producto, cantidad: detalle.cantidad });
   };
 
   const handleCancelar = () => {
     setDetalleEnEdicion(null);
+    setErrorAPI("");
     reset(VACIO);
   };
 
   const onSubmit = async (data) => {
+    setErrorAPI("");
+    setMensaje("");
+
     try {
       if (detalleEnEdicion) {
         await editarDetalle(detalleEnEdicion.id, { venta: venta.id, ...data });
       } else {
         await crearDetalle({ venta: venta.id, ...data });
       }
+
       setDetalleEnEdicion(null);
       reset(VACIO);
-      setMensaje("Detalle guardado (simulado: todavía no se envía a la API).");
-    } catch (error) {
-      aplicarErroresApi(error.response?.data, setError, CAMPOS);
+      setMensaje("Detalle guardado.");
+      setVersion((v) => v + 1);
+    } catch (err) {
+      setErrorAPI(err.message);
     }
   };
 
+  const handleBorrar = async () => {
+    if (!confirm("¿Seguro que querés dar de baja esta venta?")) return;
+
+    setErrorAPI("");
+
+    try {
+      await borrarVenta(venta.id);
+      router.push("/ventas");
+    } catch (err) {
+      setErrorAPI(err.message);
+    }
+  };
+
+  if (noEncontrada) {
+    notFound();
+  }
+
+  if (cargando) {
+    return <p>Cargando venta...</p>;
+  }
+
+  if (error || !venta) {
+    return (
+      <p role="alert">
+        {error || "No se pudo cargar la venta"}
+      </p>
+    );
+  }
+
   return (
-    <section className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <Link
-          href="/ventas"
-          className="text-zinc-600 transition-colors hover:text-foreground dark:text-zinc-400"
-        >
+    <section>
+      <div>
+        <Link href="/ventas">
           ← Volver a ventas
         </Link>
-        <Link
-          href={`/ventas/${venta.id}/edit`}
-          className="rounded-full bg-foreground px-5 py-2 font-medium text-background transition-opacity hover:opacity-80"
-        >
-          Editar venta
-        </Link>
+
+        <div>
+          <Link href={`/ventas/${venta.id}/edit`}>
+            Editar venta
+          </Link>
+          <button
+            type="button"
+            onClick={handleBorrar}
+          >
+            Dar de baja
+          </button>
+        </div>
       </div>
 
-      <VentaDetail venta={venta} onEditarDetalle={handleEditar} />
+      <VentaDetail
+        venta={venta}
+        productos={productos}
+        onEditarDetalle={handleEditar}
+      />
 
-      {mensaje && <p className="text-sm text-green-600">{mensaje}</p>}
+      {mensaje && (
+        <p role="status">
+          {mensaje}
+        </p>
+      )}
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex max-w-xl flex-col gap-4 rounded-xl border border-black/10 p-6 dark:border-white/20"
+        noValidate
       >
-        <h3 className="text-lg font-medium">
+        <h3>
           {detalleEnEdicion
             ? `Editar detalle #${detalleEnEdicion.id}`
             : "Agregar detalle"}
         </h3>
 
-        <div className="flex flex-col gap-1">
-          <label htmlFor="producto" className="font-medium">
+        <div>
+          <label htmlFor="producto">
             Producto
           </label>
-          <select id="producto" className={inputClassName} {...register("producto")}>
+          <select id="producto" {...register("producto")}>
             <option value="">Seleccioná un producto</option>
-            {productosEjemplo.map((p) => (
+            {productos.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.nombre}
               </option>
             ))}
           </select>
           {errors.producto && (
-            <p className="text-sm text-red-500">{errors.producto.message}</p>
+            <p>{errors.producto.message}</p>
           )}
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label htmlFor="cantidad" className="font-medium">
+        <div>
+          <label htmlFor="cantidad">
             Cantidad
           </label>
           <input
             id="cantidad"
             type="number"
-            className={inputClassName}
             {...register("cantidad")}
           />
           {errors.cantidad && (
-            <p className="text-sm text-red-500">{errors.cantidad.message}</p>
+            <p>{errors.cantidad.message}</p>
           )}
         </div>
 
-        {errors.root?.server && (
-          <p className="text-sm text-red-500">{errors.root.server.message}</p>
+        {errorAPI && (
+          <p role="alert">
+            {errorAPI}
+          </p>
         )}
 
-        <div className="flex gap-3">
+        <div>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-full bg-foreground px-5 py-2 font-medium text-background transition-opacity hover:opacity-80 disabled:opacity-50"
           >
             {isSubmitting
               ? "Guardando..."
@@ -150,7 +256,6 @@ export default function VentaDetallePage({ params }) {
             <button
               type="button"
               onClick={handleCancelar}
-              className="rounded-full border border-black/20 px-5 py-2 font-medium dark:border-white/30"
             >
               Cancelar
             </button>

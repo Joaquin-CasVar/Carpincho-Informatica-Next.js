@@ -1,25 +1,106 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import VentaCard from "@/components/VentaCard";
-import { ventasEjemplo } from "@/data/ventasEjemplo";
+import { listarVentas } from "@/lib/api";
 
 export default function VentasPage() {
+  const [ventas, setVentas] = useState([]);
+  const [pagina, setPagina] = useState(1);
+  const [total, setTotal] = useState(null);
+  const [haySiguiente, setHaySiguiente] = useState(false);
+  const [hayAnterior, setHayAnterior] = useState(false);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelado = false;
+
+    async function cargarVentas() {
+      setCargando(true);
+      setError("");
+
+      try {
+        const data = await listarVentas(pagina);
+
+        if (cancelado) return;
+
+        setVentas(data.results ?? []);
+        setTotal(data.count ?? null);
+        setHaySiguiente(Boolean(data.next));
+        setHayAnterior(Boolean(data.previous));
+      } catch (err) {
+        if (!cancelado) {
+          setVentas([]);
+          setError(err.message);
+        }
+      } finally {
+        if (!cancelado) {
+          setCargando(false);
+        }
+      }
+    }
+
+    cargarVentas();
+
+    return () => {
+      cancelado = true;
+    };
+  }, [pagina]);
+
   return (
-    <section className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Listado de ventas</h2>
-        <Link
-          href="/ventas/create"
-          className="rounded-full bg-foreground px-5 py-2 font-medium text-background transition-opacity hover:opacity-80"
-        >
+    <section>
+      <div>
+        <h2>
+          Listado de ventas{total !== null && ` (${total})`}
+        </h2>
+        <Link href="/ventas/create">
           Nueva venta
         </Link>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {ventasEjemplo.map((venta) => (
-          <VentaCard key={venta.id} venta={venta} />
-        ))}
-      </div>
+      {error && (
+        <p role="alert">
+          {error}
+        </p>
+      )}
+
+      {cargando ? (
+        <p>Cargando ventas...</p>
+      ) : !error && ventas.length === 0 ? (
+        <p>Todavía no hay ventas cargadas.</p>
+      ) : !error ? (
+        <>
+          <div>
+            {ventas.map((venta) => (
+              <VentaCard key={venta.id} venta={venta} />
+            ))}
+          </div>
+
+          <div>
+            <p>Página {pagina}</p>
+
+            <div>
+              <button
+                type="button"
+                disabled={!hayAnterior || cargando}
+                onClick={() => setPagina((prev) => Math.max(1, prev - 1))}
+              >
+                Anterior
+              </button>
+
+              <button
+                type="button"
+                disabled={!haySiguiente || cargando}
+                onClick={() => setPagina((prev) => prev + 1)}
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
+        </>
+      ) : null}
     </section>
   );
 }

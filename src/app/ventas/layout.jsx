@@ -1,21 +1,50 @@
-import Link from "next/link";
+"use client";
 
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+// Layout anidado de la sección /ventas. Solo se entra con sesión iniciada.
 export default function VentasLayout({ children }) {
+  const router = useRouter();
+  const [autorizado, setAutorizado] = useState(false);
+
+  useEffect(() => {
+    let cancelado = false;
+
+    async function comprobarAcceso() {
+      const token = sessionStorage.getItem("access");
+
+      if (!token) {
+        router.replace("/account/login");
+        return;
+      }
+
+      if (!cancelado) {
+        setAutorizado(true);
+      }
+    }
+
+    comprobarAcceso();
+
+    return () => {
+      cancelado = true;
+    };
+  }, [router]);
+
+  if (!autorizado) {
+    return <p>Verificando sesión...</p>;
+  }
+
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-6 py-12">
-      <div className="flex items-center justify-between border-b border-black/10 pb-4 dark:border-white/20">
-        <h1 className="text-3xl font-semibold tracking-tight">Ventas</h1>
-        <nav className="flex gap-6">
-          <Link
-            href="/ventas"
-            className="text-zinc-600 transition-colors hover:text-foreground dark:text-zinc-400"
-          >
+    <div>
+      <div>
+        <h1>Ventas</h1>
+        <nav>
+          <Link href="/ventas">
             Listado
           </Link>
-          <Link
-            href="/ventas/create"
-            className="text-zinc-600 transition-colors hover:text-foreground dark:text-zinc-400"
-          >
+          <Link href="/ventas/create">
             Nueva venta
           </Link>
         </nav>
