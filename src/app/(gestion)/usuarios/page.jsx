@@ -3,7 +3,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { listarUsuarios } from '@/lib/api';
+import { listarUsuarios, desactivarUsuario } from '@/lib/api';
+import BotonDesactivar from '@/components/gestion/BotonDesactivar';
+import Paginacion from '@/components/gestion/Paginacion';
 
 export default function UsuariosPage() {
   const [usuarios, setUsuarios] = useState([]);
@@ -14,14 +16,13 @@ export default function UsuariosPage() {
 
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
+  const [mensaje, setMensaje] = useState('');
+  const [versionListado, setVersionListado] = useState(0);
 
   useEffect(() => {
     let cancelado = false;
 
     async function cargarUsuarios() {
-      setCargando(true);
-      setError('');
-
       try {
         const data = await listarUsuarios(pagina);
 
@@ -55,7 +56,26 @@ export default function UsuariosPage() {
     return () => {
       cancelado = true;
     };
-  }, [pagina]);
+  }, [pagina, versionListado]);
+
+  function actualizarListado() {
+    setMensaje('Usuario desactivado correctamente.');
+    setError('');
+    setCargando(true);
+
+    if (usuarios.length === 1 && pagina > 1) {
+      setPagina((prev) => prev - 1);
+    } else {
+      setVersionListado((prev) => prev + 1);
+    }
+  }
+
+  function cambiarPagina(nuevaPagina) {
+    setCargando(true);
+    setError('');
+    setMensaje('');
+    setPagina(nuevaPagina);
+  }
 
   return (
     <main className="space-y-6">
@@ -77,6 +97,12 @@ export default function UsuariosPage() {
           + Nuevo usuario
         </Link>
       </div>
+
+      {mensaje && (
+        <p role="status" className="text-green-600">
+          {mensaje}
+        </p>
+      )}
 
       {error && (
         <p role="alert" className="text-red-500">
@@ -131,12 +157,21 @@ export default function UsuariosPage() {
                     </td>
 
                     <td className="p-3">
-                      <Link
-                        href={`/usuarios/${usuario.id}/editar`}
-                        className="font-medium text-blue-500 hover:underline"
-                      >
-                        Editar
-                      </Link>
+                      <div className="flex flex-wrap items-center gap-4">
+                        <Link
+                          href={`/usuarios/${usuario.id}/editar`}
+                          className="font-medium text-blue-500 hover:underline"
+                        >
+                          Editar
+                        </Link>
+
+                        <BotonDesactivar
+                          id={usuario.id}
+                          nombre={usuario.username}
+                          onDesactivar={desactivarUsuario}
+                          onDesactivado={actualizarListado}
+                        />
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -144,41 +179,15 @@ export default function UsuariosPage() {
             </table>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p>Página {pagina}</p>
-
-              {total !== null && (
-                <p className="text-sm opacity-70">
-                  Total de usuarios: {total}
-                </p>
-              )}
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                type="button"
-                disabled={!hayAnterior}
-                onClick={() =>
-                  setPagina((prev) => Math.max(1, prev - 1))
-                }
-                className="rounded border px-4 py-2 disabled:opacity-40"
-              >
-                Anterior
-              </button>
-
-              <button
-                type="button"
-                disabled={!haySiguiente}
-                onClick={() =>
-                  setPagina((prev) => prev + 1)
-                }
-                className="rounded border px-4 py-2 disabled:opacity-40"
-              >
-                Siguiente
-              </button>
-            </div>
-          </div>
+          <Paginacion
+            pagina={pagina}
+            total={total}
+            nombreEntidad="usuarios"
+            hayAnterior={hayAnterior}
+            haySiguiente={haySiguiente}
+            cargando={cargando}
+            onCambiarPagina={cambiarPagina}
+          />
         </>
       ) : null}
     </main>

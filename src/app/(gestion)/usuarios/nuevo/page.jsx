@@ -2,8 +2,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { crearUsuario } from '@/lib/api';
 import { crearUsuarioSchema } from '@/schemas/usuarioSchema';
+import FormField from '@/components/gestion/FormField';
 
 const formularioInicial = {
   username: '',
@@ -26,46 +28,39 @@ const campos = [
 ];
 
 export default function NuevoUsuarioPage() {
+  const router = useRouter();
+
   const [form, setForm] = useState(formularioInicial);
   const [errores, setErrores] = useState({});
-  const [mensaje, setMensaje] = useState('');
   const [errorAPI, setErrorAPI] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
+  function handleChange(e) {
     const { name, value } = e.target;
 
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
+    setErrores((prev) => ({ ...prev, [name]: undefined }));
+    setErrorAPI('');
+  }
 
-    setErrores((prev) => ({
-      ...prev,
-      [name]: undefined,
-    }));
-
-    setMensaje('');
-  };
-
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
+
+    if (loading) return;
 
     setErrores({});
     setErrorAPI('');
-    setMensaje('');
 
-    // Primero validamos con Zod
     const resultado = crearUsuarioSchema.safeParse(form);
 
     if (!resultado.success) {
       const erroresCampos = {};
 
-      resultado.error.issues.forEach((error) => {
-        const campo = error.path[0];
+      resultado.error.issues.forEach((issue) => {
+        const campo = issue.path[0];
 
         if (campo && !erroresCampos[campo]) {
-          erroresCampos[campo] = error.message;
+          erroresCampos[campo] = issue.message;
         }
       });
 
@@ -73,20 +68,16 @@ export default function NuevoUsuarioPage() {
       return;
     }
 
-    // Si Zod acepta los datos, enviamos a Django
     setLoading(true);
 
     try {
       await crearUsuario(resultado.data);
-
-      setMensaje('Usuario creado correctamente');
-      setForm({ ...formularioInicial });
+      router.replace('/usuarios');
     } catch (err) {
-      setErrorAPI(err.message);
-    } finally {
+      setErrorAPI(err.message || 'No se pudo crear el usuario.');
       setLoading(false);
     }
-  };
+  }
 
   return (
     <main className="mx-auto max-w-lg p-6">
@@ -94,56 +85,30 @@ export default function NuevoUsuarioPage() {
         Crear usuario
       </h1>
 
-      <form
-        onSubmit={handleSubmit}
-        noValidate
-        className="space-y-4"
-      >
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
         {campos.map(([name, label]) => (
-          <div key={name}>
-            <label htmlFor={name} className="mb-1 block">
-              {label}
-            </label>
-
-            <input
-              id={name}
-              name={name}
-              type={
-                name.includes('password')
-                  ? 'password'
-                  : name === 'email'
-                    ? 'email'
-                    : 'text'
-              }
-              value={form[name]}
-              onChange={handleChange}
-              aria-invalid={Boolean(errores[name])}
-              aria-describedby={
-                errores[name] ? `${name}-error` : undefined
-              }
-              className="w-full rounded border p-2"
-            />
-
-            {errores[name] && (
-              <p
-                id={`${name}-error`}
-                className="mt-1 text-sm text-red-500"
-              >
-                {errores[name]}
-              </p>
-            )}
-          </div>
+          <FormField
+            key={name}
+            id={name}
+            name={name}
+            label={label}
+            type={
+              name.includes('password')
+                ? 'password'
+                : name === 'email'
+                  ? 'email'
+                  : 'text'
+            }
+            value={form[name]}
+            onChange={handleChange}
+            error={errores[name]}
+            disabled={loading}
+          />
         ))}
 
         {errorAPI && (
           <p role="alert" className="text-red-500">
             {errorAPI}
-          </p>
-        )}
-
-        {mensaje && (
-          <p role="status" className="text-green-600">
-            {mensaje}
           </p>
         )}
 

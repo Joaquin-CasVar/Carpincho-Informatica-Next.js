@@ -2,23 +2,34 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { crearVendedor } from '@/lib/api';
 import { crearVendedorSchema } from '@/schemas/vendedorSchema';
+import UsuarioSelect from '@/components/gestion/UsuarioSelect';
+import FormField from '@/components/gestion/FormField';
 
 export default function NuevoVendedorPage() {
+  const router = useRouter();
+
   const [personaId, setPersonaId] = useState('');
   const [salario, setSalario] = useState('');
   const [errores, setErrores] = useState({});
   const [errorAPI, setErrorAPI] = useState('');
-  const [mensaje, setMensaje] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  function cambiarUsuario(valor) {
+    setPersonaId(valor);
+    setErrores((prev) => ({ ...prev, persona_id: undefined }));
+    setErrorAPI('');
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
+
+    if (loading) return;
 
     setErrores({});
     setErrorAPI('');
-    setMensaje('');
 
     const datos = {
       persona_id: personaId === '' ? 0 : Number(personaId),
@@ -47,16 +58,12 @@ export default function NuevoVendedorPage() {
 
     try {
       await crearVendedor(resultado.data);
-
-      setMensaje('Vendedor creado correctamente');
-      setPersonaId('');
-      setSalario('');
+      router.replace('/vendedores');
     } catch (err) {
-      setErrorAPI(err.message);
-    } finally {
+      setErrorAPI(err.message || 'No se pudo crear el vendedor.');
       setLoading(false);
     }
-  };
+  }
 
   return (
     <main className="mx-auto max-w-lg p-6">
@@ -64,78 +71,36 @@ export default function NuevoVendedorPage() {
         Crear vendedor
       </h1>
 
-      <form
-        onSubmit={handleSubmit}
-        noValidate
-        className="space-y-4"
-      >
-        <div>
-          <label htmlFor="personaId" className="mb-1 block">
-            ID del usuario
-          </label>
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <UsuarioSelect
+          value={personaId}
+          onChange={cambiarUsuario}
+          error={errores.persona_id}
+          disabled={loading}
+        />
 
-          <input
-            id="personaId"
-            type="number"
-            value={personaId}
-            onChange={(e) => {
-              setPersonaId(e.target.value);
-              setErrores((prev) => ({
-                ...prev,
-                persona_id: undefined,
-              }));
-              setMensaje('');
-            }}
-            aria-invalid={Boolean(errores.persona_id)}
-            className="w-full rounded border p-2"
-          />
-
-          {errores.persona_id && (
-            <p className="mt-1 text-sm text-red-500">
-              {errores.persona_id}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label htmlFor="salario" className="mb-1 block">
-            Salario
-          </label>
-
-          <input
-            id="salario"
-            type="text"
-            inputMode="decimal"
-            placeholder="Ejemplo: 850000.50"
-            value={salario}
-            onChange={(e) => {
-              setSalario(e.target.value);
-              setErrores((prev) => ({
-                ...prev,
-                salario: undefined,
-              }));
-              setMensaje('');
-            }}
-            aria-invalid={Boolean(errores.salario)}
-            className="w-full rounded border p-2"
-          />
-
-          {errores.salario && (
-            <p className="mt-1 text-sm text-red-500">
-              {errores.salario}
-            </p>
-          )}
-        </div>
+        <FormField
+          id="salario"
+          name="salario"
+          label="Salario"
+          value={salario}
+          onChange={(e) => {
+            setSalario(e.target.value);
+            setErrores((prev) => ({
+              ...prev,
+              salario: undefined,
+            }));
+            setErrorAPI('');
+          }}
+          error={errores.salario}
+          placeholder="Ejemplo: 850000.50"
+          inputMode="decimal"
+          disabled={loading}
+        />
 
         {errorAPI && (
           <p role="alert" className="text-red-500">
             {errorAPI}
-          </p>
-        )}
-
-        {mensaje && (
-          <p role="status" className="text-green-600">
-            {mensaje}
           </p>
         )}
 

@@ -500,6 +500,47 @@ export async function listarVendedores(pagina = 1) {
 
 
 
+// Función reutilizable para el borrado lógico
+async function desactivarRegistro(tipo, id) {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/${tipo}/${id}/`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    let mensaje = 'No se pudo desactivar el registro';
+
+    try {
+      const data = await response.json();
+      mensaje = data.detail || mensaje;
+    } catch {
+      // El servidor no devolvió un JSON válido.
+    }
+
+    throw new Error(mensaje);
+  }
+
+  return true;
+}
+
+// Desactivar usuario
+export function desactivarUsuario(id) {
+  return desactivarRegistro('usuarios', id);
+}
+
+// Desactivar cliente
+export function desactivarCliente(id) {
+  return desactivarRegistro('clientes', id);
+}
+
+// Desactivar vendedor
+export function desactivarVendedor(id) {
+  return desactivarRegistro('vendedores', id);
 // ---------------------------------------------------------------------------
 // VENTAS
 // ---------------------------------------------------------------------------
@@ -513,7 +554,6 @@ async function llamar(ruta, { method = 'GET', body } = {}) {
   if (!token) {
     throw new Error('Tenés que iniciar sesión.');
   }
-
   const response = await fetch(`${API_URL}${ruta}`, {
     method,
     headers: {
