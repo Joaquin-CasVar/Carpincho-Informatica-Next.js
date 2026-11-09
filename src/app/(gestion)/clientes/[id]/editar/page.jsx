@@ -2,34 +2,33 @@
 'use client';
 
 import { use, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { obtenerCliente, editarCliente } from '@/lib/api';
 import { editarClienteSchema } from '@/schemas/clienteSchema';
+import FormField from '@/components/gestion/FormField';
 
 export default function EditarClientePage({ params }) {
   const { id } = use(params);
+  const router = useRouter();
 
   const [cliente, setCliente] = useState(null);
   const [direccion, setDireccion] = useState('');
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState('');
-  const [mensaje, setMensaje] = useState('');
   const [errores, setErrores] = useState({});
 
   useEffect(() => {
     let cancelado = false;
 
     async function cargarCliente() {
-      setCargando(true);
-      setError('');
-
       try {
         const data = await obtenerCliente(id);
 
-        if (!cancelado) {
-          setCliente(data);
-          setDireccion(data.direccion ?? '');
-        }
+        if (cancelado) return;
+
+        setCliente(data);
+        setDireccion(data.direccion ?? '');
       } catch (err) {
         if (!cancelado) {
           setError(err.message);
@@ -48,11 +47,12 @@ export default function EditarClientePage({ params }) {
     };
   }, [id]);
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
 
+    if (guardando) return;
+
     setError('');
-    setMensaje('');
     setErrores({});
 
     const resultado = editarClienteSchema.safeParse({
@@ -78,14 +78,12 @@ export default function EditarClientePage({ params }) {
 
     try {
       await editarCliente(id, resultado.data);
-      setDireccion(resultado.data.direccion);
-      setMensaje('Cliente actualizado correctamente');
+      router.replace('/clientes');
     } catch (err) {
-      setError(err.message);
-    } finally {
+      setError(err.message || 'No se pudo actualizar el cliente.');
       setGuardando(false);
     }
-  };
+  }
 
   if (cargando) {
     return <p className="p-6">Cargando cliente...</p>;
@@ -107,59 +105,43 @@ export default function EditarClientePage({ params }) {
 
       <div className="mb-6 rounded bg-gray-100 p-4 text-gray-900">
         <p>
-          <strong>Usuario:</strong> {cliente.persona.username}
+          <strong>Usuario:</strong>{' '}
+          {cliente.persona?.username || '-'}
         </p>
 
         <p>
           <strong>Nombre:</strong>{' '}
-          {cliente.persona.first_name}{' '}
-          {cliente.persona.last_name}
+          {cliente.persona?.first_name || ''}{' '}
+          {cliente.persona?.last_name || ''}
         </p>
 
         <p>
-          <strong>Email:</strong> {cliente.persona.email}
+          <strong>Email:</strong>{' '}
+          {cliente.persona?.email || '-'}
         </p>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        noValidate
-        className="space-y-4"
-      >
-        <div>
-          <label htmlFor="direccion" className="mb-1 block">
-            Dirección
-          </label>
-
-          <input
-            id="direccion"
-            type="text"
-            value={direccion}
-            onChange={(e) => {
-              setDireccion(e.target.value);
-              setErrores({});
-              setMensaje('');
-            }}
-            aria-invalid={Boolean(errores.direccion)}
-            className="w-full rounded border p-2"
-          />
-
-          {errores.direccion && (
-            <p className="mt-1 text-sm text-red-500">
-              {errores.direccion}
-            </p>
-          )}
-        </div>
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <FormField
+          id="direccion"
+          name="direccion"
+          label="Dirección"
+          value={direccion}
+          onChange={(e) => {
+            setDireccion(e.target.value);
+            setErrores((prev) => ({
+              ...prev,
+              direccion: undefined,
+            }));
+            setError('');
+          }}
+          error={errores.direccion}
+          disabled={guardando}
+        />
 
         {error && (
           <p role="alert" className="text-red-500">
             {error}
-          </p>
-        )}
-
-        {mensaje && (
-          <p role="status" className="text-green-600">
-            {mensaje}
           </p>
         )}
 
