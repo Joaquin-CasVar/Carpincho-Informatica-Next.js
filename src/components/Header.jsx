@@ -4,7 +4,9 @@ import AuthControls from "@/components/AuthControls";
 const links = [
   { href: "/", label: "Inicio" },
   { href: "/productos", label: "Productos" },
+  { href: "/ventas", label: "Ventas" },
   { href: "/contacto", label: "Contacto" },
+  { href: "/estadisticas", label: "Estadisticas" },
 ];
 
 export default function Header() {

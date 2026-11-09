@@ -1,8 +1,41 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL; // Traigo url del back
+export const API_URL = process.env.NEXT_PUBLIC_API_URL; // Traigo url del back
+
+export const ENDPOINTS = {
+    fabricantes: 'fabricantes/',
+    colores: 'colores/',
+    tipos_producto: 'tipos-producto/',
+    arquitecturas: 'arquitecturas/',
+    sockets: 'sockets/',
+    chipsets_gpu: 'chipsets-gpu/',
+    tipos_memoria: 'tipos-memoria/',
+    refrigeraciones: 'refrigeraciones/',
+}
+async function list(path) {
+    let page = 1;
+    let all = []
+    while (true) {
+        const res = await fetch(`${API_URL}${path}?page=${page}`, { cache: "no-store" });
+        if (!res.ok) throw new error(`La API respondió ${res.status} en ${path}`);
+        const data = await res.json();
+        if (Array.isArray(data)) return data;
+        all = all.concat(data.results ?? []);
+        if (!data.next) return all;
+        page += 1;
+    }
+}
+
+export const getFabricantes = () => list(ENDPOINTS.fabricantes)
+export const getColores = () => list(ENDPOINTS.colores)
+export const getTipos_producto = () => list(ENDPOINTS.tipos_producto)
+export const getArquitecturas = () => list(ENDPOINTS.arquitecturas)
+export const getSockets = () => list(ENDPOINTS.sockets)
+export const getChipsets_gpu = () => list(ENDPOINTS.chipsets_gpu)
+export const getTipos_memoria = () => list(ENDPOINTS.tipos_memoria)
+export const getRefrigeraciones = () => list(ENDPOINTS.refrigeraciones)
 
 //login de Usuario
 export async function loginUsuario(username, password) {   //exportacion asincronica de funcion loginUsuario con los parametros username y password
-  const response = await fetch(`${API_URL}/api/token/`, { //peticion a la api que trae un JSON con username y password
+  const response = await fetch(`${API_URL}token/`, { //peticion a la api que trae un JSON con username y password
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -28,7 +61,7 @@ export async function loginUsuario(username, password) {   //exportacion asincro
 // Regitro de Usuario para uso del visitante 
 export async function registrarCliente(datos) {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/`,
+    `${process.env.NEXT_PUBLIC_API_URL}usuarios/`,
     {
       method: 'POST',
       headers: {
@@ -64,7 +97,7 @@ export async function registrarCliente(datos) {
 //crea el usuario desde el admin
 export async function verificarAdministrador(token) {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/`,
+    `${process.env.NEXT_PUBLIC_API_URL}usuarios/`,
     {
       method: 'GET',
       headers: {
@@ -100,7 +133,7 @@ export async function crearUsuario(datos) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/`,
+    `${process.env.NEXT_PUBLIC_API_URL}usuarios/`,
     {
       method: 'POST',
       headers: {
@@ -132,7 +165,7 @@ export async function obtenerUsuario(id) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/${id}/`,
+    `${process.env.NEXT_PUBLIC_API_URL}usuarios/${id}/`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -162,7 +195,7 @@ export async function editarUsuario(id, datos) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/${id}/`,
+    `${process.env.NEXT_PUBLIC_API_URL}usuarios/${id}/`,
     {
       method: 'PATCH',
       headers: {
@@ -194,7 +227,7 @@ export async function crearCliente(datos) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/`,
+    `${process.env.NEXT_PUBLIC_API_URL}clientes/`,
     {
       method: 'POST',
       headers: {
@@ -225,7 +258,7 @@ export async function obtenerCliente(id) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/${id}/`,
+    `${process.env.NEXT_PUBLIC_API_URL}clientes/${id}/`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -255,7 +288,7 @@ export async function editarCliente(id, datos) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/${id}/`,
+    `${process.env.NEXT_PUBLIC_API_URL}clientes/${id}/`,
     {
       method: 'PATCH',
       headers: {
@@ -288,7 +321,7 @@ export async function crearVendedor(datos) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/vendedores/`,
+    `${process.env.NEXT_PUBLIC_API_URL}vendedores/`,
     {
       method: 'POST',
       headers: {
@@ -319,7 +352,7 @@ export async function obtenerVendedor(id) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/vendedores/${id}/`,
+    `${process.env.NEXT_PUBLIC_API_URL}vendedores/${id}/`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -349,7 +382,7 @@ export async function editarVendedor(id, datos) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/vendedores/${id}/`,
+    `${process.env.NEXT_PUBLIC_API_URL}vendedores/${id}/`,
     {
       method: 'PATCH',
       headers: {
@@ -379,7 +412,7 @@ export async function listarUsuarios(pagina = 1) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/?page=${pagina}`,
+    `${process.env.NEXT_PUBLIC_API_URL}usuarios/?page=${pagina}`,
     {
       method: 'GET',
       headers: {
@@ -412,7 +445,7 @@ export async function listarClientes(pagina = 1) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/?page=${pagina}`,
+    `${process.env.NEXT_PUBLIC_API_URL}clientes/?page=${pagina}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -443,7 +476,7 @@ export async function listarVendedores(pagina = 1) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/vendedores/?page=${pagina}`,
+    `${process.env.NEXT_PUBLIC_API_URL}vendedores/?page=${pagina}`,
     {
       method: 'GET',
       headers: {
@@ -465,14 +498,10 @@ export async function listarVendedores(pagina = 1) {
 }
 
 
+
+
 // Función reutilizable para el borrado lógico
 async function desactivarRegistro(tipo, id) {
-  const token = sessionStorage.getItem('access');
-
-  if (!token) {
-    throw new Error('Tenés que iniciar sesión.');
-  }
-
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/${tipo}/${id}/`,
     {
@@ -512,4 +541,148 @@ export function desactivarCliente(id) {
 // Desactivar vendedor
 export function desactivarVendedor(id) {
   return desactivarRegistro('vendedores', id);
+// ---------------------------------------------------------------------------
+// VENTAS
+// ---------------------------------------------------------------------------
+
+// Hace el fetch con el token de la sesión y devuelve el JSON (o null si no hay
+// contenido). Si la API responde con error, lanza un Error con el mensaje ya
+// armado y el status en error.status.
+async function llamar(ruta, { method = 'GET', body } = {}) {
+  const token = sessionStorage.getItem('access');
+
+  if (!token) {
+    throw new Error('Tenés que iniciar sesión.');
+  }
+  const response = await fetch(`${API_URL}${ruta}`, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: body ? JSON.stringify(body) : undefined,
+    cache: 'no-store',
+  });
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    // La API devuelve { detail: "mensaje" } o { campo: ["mensaje"] }
+    const mensaje = data?.detail
+      ? data.detail
+      : data
+        ? Object.entries(data)
+            .map(([campo, mensajes]) => {
+              const texto = Array.isArray(mensajes)
+                ? mensajes.join(', ')
+                : String(mensajes);
+
+              return `${campo}: ${texto}`;
+            })
+            .join(' | ')
+        : 'Error al comunicarse con la API';
+
+    const error = new Error(mensaje);
+    error.status = response.status;
+    throw error;
+  }
+
+  return data;
+}
+
+
+//listar ventas (más nuevas primero)
+export function listarVentas(pagina = 1) {
+  return llamar(`/api/ventas/?ordering=-id&page=${pagina}`);
+}
+
+
+//obtener una venta con sus detalles GET
+export function obtenerVenta(id) {
+  return llamar(`/api/ventas/${id}/`);
+}
+
+
+//crear venta POST
+export function crearVenta(datos) {
+  return llamar('/api/ventas/', { method: 'POST', body: datos });
+}
+
+
+//editar venta PATCH
+export function editarVenta(id, datos) {
+  return llamar(`/api/ventas/${id}/`, { method: 'PATCH', body: datos });
+}
+
+
+//dar de baja una venta (borrado lógico) DELETE
+export function borrarVenta(id) {
+  return llamar(`/api/ventas/${id}/borrado_logico/`, { method: 'DELETE' });
+}
+
+
+//agregar un producto a una venta POST
+export async function crearDetalle(datos) {
+  const detalle = await llamar('/api/detalles-venta/', {
+    method: 'POST',
+    body: datos,
+  });
+
+  await actualizarTotal(detalle.id, datos.venta);
+
+  return detalle;
+}
+
+
+//editar un producto de una venta PATCH
+export async function editarDetalle(id, datos) {
+  const detalle = await llamar(`/api/detalles-venta/${id}/`, {
+    method: 'PATCH',
+    body: datos,
+  });
+
+  await actualizarTotal(id, datos.venta);
+
+  return detalle;
+}
+
+
+//listar todos los productos (la API los manda de a 10 por página)
+export async function listarProductos() {
+  const productos = [];
+  let pagina = 1;
+  let hayMas = true;
+
+  while (hayMas) {
+    const data = await llamar(`/api/productos/?page=${pagina}`);
+
+    productos.push(...data.results);
+    hayMas = Boolean(data.next);
+    pagina += 1;
+  }
+
+  return productos;
+}
+
+
+// Un detalle nuevo queda con precio_unitario y subtotal en 0 hasta llamar a
+// calcular_subtotal. Esa acción del Back SUMA el subtotal al total de la venta
+// cada vez que se llama (no lo recalcula), así que después se deja el total
+// igual a la suma real de los subtotales. Si el Back lo corrige, sigue andando.
+async function actualizarTotal(detalleId, ventaId) {
+  await llamar(`/api/detalles-venta/${detalleId}/calcular_subtotal/`, {
+    method: 'POST',
+  });
+
+  const venta = await obtenerVenta(ventaId);
+
+  const total = venta.detalles.reduce(
+    (suma, detalle) => suma + Number(detalle.subtotal),
+    0
+  );
+
+  await llamar(`/api/ventas/${ventaId}/`, {
+    method: 'PATCH',
+    body: { total: total.toFixed(2) },
+  });
 }

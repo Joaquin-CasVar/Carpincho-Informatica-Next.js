@@ -9,6 +9,9 @@ const nextConfig = {
       },
     },
   },
+  images: {
+    remotePatterns: [new URL('https://cdna.pcpartpicker.com/static/forever/images/product/**')],
+  },
 };
 
 export default nextConfig;
