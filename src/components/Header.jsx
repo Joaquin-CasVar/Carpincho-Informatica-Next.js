@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AuthControls from "@/components/AuthControls";
 
 const links = [
   { href: "/", label: "Inicio" },
@@ -26,6 +27,7 @@ export default function Header() {
             </li>
           ))}
         </ul>
+        <AuthControls />
       </nav>
     </header>
   );
