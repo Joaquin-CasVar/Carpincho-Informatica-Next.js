@@ -2,34 +2,33 @@
 'use client';
 
 import { use, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { obtenerVendedor, editarVendedor } from '@/lib/api';
 import { editarVendedorSchema } from '@/schemas/vendedorSchema';
+import FormField from '@/components/gestion/FormField';
 
 export default function EditarVendedorPage({ params }) {
   const { id } = use(params);
+  const router = useRouter();
 
   const [vendedor, setVendedor] = useState(null);
   const [salario, setSalario] = useState('');
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
-  const [errores, setErrores] = useState({});
   const [error, setError] = useState('');
-  const [mensaje, setMensaje] = useState('');
+  const [errores, setErrores] = useState({});
 
   useEffect(() => {
     let cancelado = false;
 
     async function cargarVendedor() {
-      setCargando(true);
-      setError('');
-
       try {
         const data = await obtenerVendedor(id);
 
-        if (!cancelado) {
-          setVendedor(data);
-          setSalario(String(data.salario ?? ''));
-        }
+        if (cancelado) return;
+
+        setVendedor(data);
+        setSalario(String(data.salario ?? ''));
       } catch (err) {
         if (!cancelado) {
           setError(err.message);
@@ -48,11 +47,12 @@ export default function EditarVendedorPage({ params }) {
     };
   }, [id]);
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
 
+    if (guardando) return;
+
     setError('');
-    setMensaje('');
     setErrores({});
 
     const resultado = editarVendedorSchema.safeParse({
@@ -78,15 +78,12 @@ export default function EditarVendedorPage({ params }) {
 
     try {
       await editarVendedor(id, resultado.data);
-
-      setSalario(resultado.data.salario);
-      setMensaje('Vendedor actualizado correctamente');
+      router.replace('/vendedores');
     } catch (err) {
-      setError(err.message);
-    } finally {
+      setError(err.message || 'No se pudo actualizar el vendedor.');
       setGuardando(false);
     }
-  };
+  }
 
   if (cargando) {
     return <p className="p-6">Cargando vendedor...</p>;
@@ -109,61 +106,44 @@ export default function EditarVendedorPage({ params }) {
       <div className="mb-6 rounded bg-gray-100 p-4 text-gray-900">
         <p>
           <strong>Usuario:</strong>{' '}
-          {vendedor.persona.username}
+          {vendedor.persona?.username || '-'}
         </p>
 
         <p>
           <strong>Nombre:</strong>{' '}
-          {vendedor.persona.first_name}{' '}
-          {vendedor.persona.last_name}
+          {vendedor.persona?.first_name || ''}{' '}
+          {vendedor.persona?.last_name || ''}
         </p>
 
         <p>
           <strong>Email:</strong>{' '}
-          {vendedor.persona.email}
+          {vendedor.persona?.email || '-'}
         </p>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        noValidate
-        className="space-y-4"
-      >
-        <div>
-          <label htmlFor="salario" className="mb-1 block">
-            Salario
-          </label>
-
-          <input
-            id="salario"
-            type="text"
-            inputMode="decimal"
-            value={salario}
-            onChange={(e) => {
-              setSalario(e.target.value);
-              setErrores({});
-              setMensaje('');
-            }}
-            aria-invalid={Boolean(errores.salario)}
-            className="w-full rounded border p-2"
-          />
-
-          {errores.salario && (
-            <p className="mt-1 text-sm text-red-500">
-              {errores.salario}
-            </p>
-          )}
-        </div>
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <FormField
+          id="salario"
+          name="salario"
+          label="Salario"
+          value={salario}
+          onChange={(e) => {
+            setSalario(e.target.value);
+            setErrores((prev) => ({
+              ...prev,
+              salario: undefined,
+            }));
+            setError('');
+          }}
+          error={errores.salario}
+          placeholder="Ejemplo: 850000.50"
+          inputMode="decimal"
+          disabled={guardando}
+        />
 
         {error && (
           <p role="alert" className="text-red-500">
             {error}
-          </p>
-        )}
-
-        {mensaje && (
-          <p role="status" className="text-green-600">
-            {mensaje}
           </p>
         )}
 

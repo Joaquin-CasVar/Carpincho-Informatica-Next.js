@@ -2,11 +2,22 @@
 'use client';
 
 import { use, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { obtenerUsuario, editarUsuario } from '@/lib/api';
 import { editarUsuarioSchema } from '@/schemas/usuarioSchema';
+import FormField from '@/components/gestion/FormField';
+
+const campos = [
+  ['username', 'Nombre de usuario'],
+  ['first_name', 'Nombre'],
+  ['last_name', 'Apellido'],
+  ['email', 'Correo electrónico'],
+  ['telefono', 'Teléfono'],
+];
 
 export default function EditarUsuarioPage({ params }) {
   const { id } = use(params);
+  const router = useRouter();
 
   const [form, setForm] = useState({
     username: '',
@@ -19,32 +30,29 @@ export default function EditarUsuarioPage({ params }) {
 
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
-
   const [error, setError] = useState('');
-  const [mensaje, setMensaje] = useState('');
   const [errores, setErrores] = useState({});
+  const [usuarioCargado, setUsuarioCargado] = useState(false);
 
-  // Obtener los datos actuales del usuario
   useEffect(() => {
     let cancelado = false;
 
     async function cargarUsuario() {
-      setCargando(true);
-      setError('');
-
       try {
         const usuario = await obtenerUsuario(id);
 
-        if (!cancelado) {
-          setForm({
-            username: usuario.username ?? '',
-            first_name: usuario.first_name ?? '',
-            last_name: usuario.last_name ?? '',
-            email: usuario.email ?? '',
-            telefono: usuario.telefono ?? '',
-            activo: usuario.activo ?? true,
-          });
-        }
+        if (cancelado) return;
+
+        setForm({
+          username: usuario.username ?? '',
+          first_name: usuario.first_name ?? '',
+          last_name: usuario.last_name ?? '',
+          email: usuario.email ?? '',
+          telefono: usuario.telefono ?? '',
+          activo: usuario.activo ?? true,
+        });
+
+        setUsuarioCargado(true);
       } catch (err) {
         if (!cancelado) {
           setError(err.message);
@@ -63,8 +71,7 @@ export default function EditarUsuarioPage({ params }) {
     };
   }, [id]);
 
-  // Actualizar los campos del formulario
-  const handleChange = (e) => {
+  function handleChange(e) {
     const { name, value, type, checked } = e.target;
 
     setForm((prev) => ({
@@ -77,15 +84,15 @@ export default function EditarUsuarioPage({ params }) {
       [name]: undefined,
     }));
 
-    setMensaje('');
-  };
+    setError('');
+  }
 
-  // Validar con Zod y enviar los cambios a Django
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
 
+    if (guardando) return;
+
     setError('');
-    setMensaje('');
     setErrores({});
 
     const resultado = editarUsuarioSchema.safeParse(form);
@@ -109,35 +116,24 @@ export default function EditarUsuarioPage({ params }) {
 
     try {
       await editarUsuario(id, resultado.data);
-
-      setForm(resultado.data);
-      setMensaje('Usuario actualizado correctamente');
+      router.replace('/usuarios');
     } catch (err) {
-      setError(err.message);
-    } finally {
+      setError(err.message || 'No se pudo actualizar el usuario.');
       setGuardando(false);
     }
-  };
+  }
 
   if (cargando) {
     return <p className="p-6">Cargando usuario...</p>;
   }
 
-  if (error && !form.username) {
+  if (!usuarioCargado) {
     return (
       <p role="alert" className="p-6 text-red-500">
-        {error}
+        {error || 'No se encontró el usuario'}
       </p>
     );
   }
-
-  const campos = [
-    ['username', 'Nombre de usuario'],
-    ['first_name', 'Nombre'],
-    ['last_name', 'Apellido'],
-    ['email', 'Correo electrónico'],
-    ['telefono', 'Teléfono'],
-  ];
 
   return (
     <main className="mx-auto max-w-lg p-6">
@@ -145,39 +141,19 @@ export default function EditarUsuarioPage({ params }) {
         Editar usuario #{id}
       </h1>
 
-      <form
-        onSubmit={handleSubmit}
-        noValidate
-        className="space-y-4"
-      >
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
         {campos.map(([name, label]) => (
-          <div key={name}>
-            <label htmlFor={name} className="mb-1 block">
-              {label}
-            </label>
-
-            <input
-              id={name}
-              name={name}
-              type={name === 'email' ? 'email' : 'text'}
-              value={form[name]}
-              onChange={handleChange}
-              aria-invalid={Boolean(errores[name])}
-              aria-describedby={
-                errores[name] ? `${name}-error` : undefined
-              }
-              className="w-full rounded border p-2"
-            />
-
-            {errores[name] && (
-              <p
-                id={`${name}-error`}
-                className="mt-1 text-sm text-red-500"
-              >
-                {errores[name]}
-              </p>
-            )}
-          </div>
+          <FormField
+            key={name}
+            id={name}
+            name={name}
+            label={label}
+            type={name === 'email' ? 'email' : 'text'}
+            value={form[name]}
+            onChange={handleChange}
+            error={errores[name]}
+            disabled={guardando}
+          />
         ))}
 
         <label className="flex items-center gap-2">
@@ -186,20 +162,14 @@ export default function EditarUsuarioPage({ params }) {
             name="activo"
             checked={form.activo}
             onChange={handleChange}
+            disabled={guardando}
           />
-
           Usuario activo
         </label>
 
         {error && (
           <p role="alert" className="text-red-500">
             {error}
-          </p>
-        )}
-
-        {mensaje && (
-          <p role="status" className="text-green-600">
-            {mensaje}
           </p>
         )}
 

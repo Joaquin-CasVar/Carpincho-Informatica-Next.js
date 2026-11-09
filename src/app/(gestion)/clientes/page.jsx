@@ -3,7 +3,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { listarClientes } from '@/lib/api';
+import { listarClientes, desactivarCliente } from '@/lib/api';
+import BotonDesactivar from '@/components/gestion/BotonDesactivar';
+import Paginacion from '@/components/gestion/Paginacion';
 
 export default function ClientesPage() {
   const [clientes, setClientes] = useState([]);
@@ -11,16 +13,16 @@ export default function ClientesPage() {
   const [total, setTotal] = useState(null);
   const [haySiguiente, setHaySiguiente] = useState(false);
   const [hayAnterior, setHayAnterior] = useState(false);
+
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
+  const [mensaje, setMensaje] = useState('');
+  const [versionListado, setVersionListado] = useState(0);
 
   useEffect(() => {
     let cancelado = false;
 
     async function cargarClientes() {
-      setCargando(true);
-      setError('');
-
       try {
         const data = await listarClientes(pagina);
 
@@ -54,7 +56,26 @@ export default function ClientesPage() {
     return () => {
       cancelado = true;
     };
-  }, [pagina]);
+  }, [pagina, versionListado]);
+
+  function actualizarListado() {
+    setMensaje('Cliente desactivado correctamente.');
+    setError('');
+    setCargando(true);
+
+    if (clientes.length === 1 && pagina > 1) {
+      setPagina((prev) => prev - 1);
+    } else {
+      setVersionListado((prev) => prev + 1);
+    }
+  }
+
+  function cambiarPagina(nuevaPagina) {
+    setCargando(true);
+    setError('');
+    setMensaje('');
+    setPagina(nuevaPagina);
+  }
 
   return (
     <main className="space-y-6">
@@ -76,6 +97,12 @@ export default function ClientesPage() {
           + Nuevo cliente
         </Link>
       </div>
+
+      {mensaje && (
+        <p role="status" className="text-green-600">
+          {mensaje}
+        </p>
+      )}
 
       {error && (
         <p role="alert" className="text-red-500">
@@ -130,12 +157,24 @@ export default function ClientesPage() {
                     </td>
 
                     <td className="p-3">
-                      <Link
-                        href={`/clientes/${cliente.id}/editar`}
-                        className="font-medium text-blue-500 hover:underline"
-                      >
-                        Editar
-                      </Link>
+                      <div className="flex flex-wrap items-center gap-4">
+                        <Link
+                          href={`/clientes/${cliente.id}/editar`}
+                          className="font-medium text-blue-500 hover:underline"
+                        >
+                          Editar
+                        </Link>
+
+                        <BotonDesactivar
+                          id={cliente.id}
+                          nombre={
+                            cliente.persona?.username ||
+                            `cliente #${cliente.id}`
+                          }
+                          onDesactivar={desactivarCliente}
+                          onDesactivado={actualizarListado}
+                        />
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -143,41 +182,15 @@ export default function ClientesPage() {
             </table>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p>Página {pagina}</p>
-
-              {total !== null && (
-                <p className="text-sm opacity-70">
-                  Total de clientes: {total}
-                </p>
-              )}
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                type="button"
-                disabled={!hayAnterior || cargando}
-                onClick={() =>
-                  setPagina((prev) => Math.max(1, prev - 1))
-                }
-                className="rounded border px-4 py-2 disabled:opacity-40"
-              >
-                Anterior
-              </button>
-
-              <button
-                type="button"
-                disabled={!haySiguiente || cargando}
-                onClick={() =>
-                  setPagina((prev) => prev + 1)
-                }
-                className="rounded border px-4 py-2 disabled:opacity-40"
-              >
-                Siguiente
-              </button>
-            </div>
-          </div>
+          <Paginacion
+            pagina={pagina}
+            total={total}
+            nombreEntidad="clientes"
+            hayAnterior={hayAnterior}
+            haySiguiente={haySiguiente}
+            cargando={cargando}
+            onCambiarPagina={cambiarPagina}
+          />
         </>
       ) : null}
     </main>
