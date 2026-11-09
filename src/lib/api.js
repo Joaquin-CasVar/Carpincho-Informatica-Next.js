@@ -2,7 +2,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL; // Traigo url del back
 
 //login de Usuario
 export async function loginUsuario(username, password) {   //exportacion asincronica de funcion loginUsuario con los parametros username y password
-  const response = await fetch(`${API_URL}/api/token/`, { //peticion a la api que trae un JSON con username y password
+  const response = await fetch(`${API_URL}token/`, { //peticion a la api que trae un JSON con username y password
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ export async function loginUsuario(username, password) {   //exportacion asincro
 // Regitro de Usuario para uso del visitante 
 export async function registrarCliente(datos) {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/`,
+    `${process.env.NEXT_PUBLIC_API_URL}usuarios/`,
     {
       method: 'POST',
       headers: {
@@ -64,7 +64,7 @@ export async function registrarCliente(datos) {
 //crea el usuario desde el admin
 export async function verificarAdministrador(token) {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/`,
+    `${process.env.NEXT_PUBLIC_API_URL}usuarios/`,
     {
       method: 'GET',
       headers: {
@@ -100,7 +100,7 @@ export async function crearUsuario(datos) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/`,
+    `${process.env.NEXT_PUBLIC_API_URL}usuarios/`,
     {
       method: 'POST',
       headers: {
@@ -132,7 +132,7 @@ export async function obtenerUsuario(id) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/${id}/`,
+    `${process.env.NEXT_PUBLIC_API_URL}usuarios/${id}/`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -162,7 +162,7 @@ export async function editarUsuario(id, datos) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/${id}/`,
+    `${process.env.NEXT_PUBLIC_API_URL}usuarios/${id}/`,
     {
       method: 'PATCH',
       headers: {
@@ -194,7 +194,7 @@ export async function crearCliente(datos) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/`,
+    `${process.env.NEXT_PUBLIC_API_URL}clientes/`,
     {
       method: 'POST',
       headers: {
@@ -225,7 +225,7 @@ export async function obtenerCliente(id) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/${id}/`,
+    `${process.env.NEXT_PUBLIC_API_URL}clientes/${id}/`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -255,7 +255,7 @@ export async function editarCliente(id, datos) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/${id}/`,
+    `${process.env.NEXT_PUBLIC_API_URL}clientes/${id}/`,
     {
       method: 'PATCH',
       headers: {
@@ -288,7 +288,7 @@ export async function crearVendedor(datos) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/vendedores/`,
+    `${process.env.NEXT_PUBLIC_API_URL}vendedores/`,
     {
       method: 'POST',
       headers: {
@@ -319,7 +319,7 @@ export async function obtenerVendedor(id) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/vendedores/${id}/`,
+    `${process.env.NEXT_PUBLIC_API_URL}vendedores/${id}/`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -349,7 +349,7 @@ export async function editarVendedor(id, datos) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/vendedores/${id}/`,
+    `${process.env.NEXT_PUBLIC_API_URL}vendedores/${id}/`,
     {
       method: 'PATCH',
       headers: {
@@ -379,7 +379,7 @@ export async function listarUsuarios(pagina = 1) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/usuarios/?page=${pagina}`,
+    `${process.env.NEXT_PUBLIC_API_URL}usuarios/?page=${pagina}`,
     {
       method: 'GET',
       headers: {
@@ -412,7 +412,7 @@ export async function listarClientes(pagina = 1) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/clientes/?page=${pagina}`,
+    `${process.env.NEXT_PUBLIC_API_URL}clientes/?page=${pagina}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -443,7 +443,7 @@ export async function listarVendedores(pagina = 1) {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/vendedores/?page=${pagina}`,
+    `${process.env.NEXT_PUBLIC_API_URL}vendedores/?page=${pagina}`,
     {
       method: 'GET',
       headers: {
