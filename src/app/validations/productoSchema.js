@@ -16,4 +16,6 @@ export const productoSchema = z.object({
         .min(1, 'Debe seleccionar un color'),
     tipo: z.int()
         .min(1, 'Debe seleccionar un tipo de producto'),
+    imagen: z.string()
+        .optional(),
 })
