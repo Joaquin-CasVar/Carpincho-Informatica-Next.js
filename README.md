@@ -31,8 +31,14 @@ Las variables de entorno estan en el archivo `.env.example` del repositorio
 [GitHub Projects](https://github.com/users/Joaquin-CasVar/projects/6/views/1)
 
 ### Pasos para correr los tests
-1. Seguir los pasos para instalar las dependencias
-2. Correr tests `npm run test`
+Si todavía no tenes el repositorio en tu PC con las dependencias instaladas:
+1. Clonar repositorio `https://github.com/Joaquin-CasVar/Carpincho-Informatica-Next.js.git`
+2. Ingresar al directorio clonado `cd Carpincho-Informatica-Next.js/`
+3. Instalar dependencias `npm install`
+4. Correr tests `npm run test`
+
+Si ya tenes el repositorio
+1. Correr tests `npm run test`
 
 ---
 
