@@ -1,4 +1,4 @@
-"use client";
+"use client"; // usa hooks y sessionStorage, por eso es componente cliente
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -13,11 +13,12 @@ const pestanas = [
 // Layout anidado de la sección /ventas. Solo se entra con sesión iniciada.
 export default function VentasLayout({ children }) {
   const router = useRouter();
-  const pathname = usePathname();
-  const [autorizado, setAutorizado] = useState(false);
+  const pathname = usePathname(); // ruta actual, para resaltar la pestaña activa
+  const [autorizado, setAutorizado] = useState(false); // pasa a true si hay sesión
 
+  // Al entrar a /ventas: si no hay token, manda al login
   useEffect(() => {
-    let cancelado = false;
+    let cancelado = false; // evita actualizar el estado si ya se salió de la página
 
     async function comprobarAcceso() {
       const token = sessionStorage.getItem("access");
@@ -39,7 +40,7 @@ export default function VentasLayout({ children }) {
     };
   }, [router]);
 
-  if (!autorizado) {
+  if (!autorizado) { // mientras verifica, no muestra la sección
     return (
       <p className="container-page flex items-center gap-2 py-16 text-sm text-muted-foreground">
         <span className="size-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -72,6 +73,7 @@ export default function VentasLayout({ children }) {
           ))}
         </nav>
       </div>
+      {/* acá aparece la página que toque: listado, detalle, crear o editar */}
       {children}
     </div>
   );

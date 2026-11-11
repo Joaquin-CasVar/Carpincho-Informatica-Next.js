@@ -16,15 +16,15 @@ import {
   obtenerVenta,
 } from "@/lib/api";
 
-const VACIO = { producto: "", cantidad: 1 };
+const VACIO = { producto: "", cantidad: 1 }; // formulario de detalle vacío
 
 export default function VentaDetallePage({ params }) {
   // En un Client Component, params es una Promise y se lee con use()
   const { id } = use(params);
   const router = useRouter();
 
-  const [venta, setVenta] = useState(null);
-  const [productos, setProductos] = useState([]);
+  const [venta, setVenta] = useState(null); // venta con sus detalles (de la API)
+  const [productos, setProductos] = useState([]); // para el select y los nombres de la tabla
   const [cargando, setCargando] = useState(true);
   const [noEncontrada, setNoEncontrada] = useState(false);
   const [error, setError] = useState("");
@@ -32,8 +32,9 @@ export default function VentaDetallePage({ params }) {
   const [mensaje, setMensaje] = useState("");
   // Se incrementa para volver a pedir la venta a la API después de guardar
   const [version, setVersion] = useState(0);
-  const [detalleEnEdicion, setDetalleEnEdicion] = useState(null);
+  const [detalleEnEdicion, setDetalleEnEdicion] = useState(null); // null = agregando, si no = editando ese detalle
 
+  // Formulario del detalle: React Hook Form + validación con Zod
   const {
     register,
     handleSubmit,
@@ -99,13 +100,13 @@ export default function VentaDetallePage({ params }) {
     return () => {
       cancelado = true;
     };
-  }, [id, version]);
+  }, [id, version]); // vuelve a pedir la venta cuando cambia "version"
 
   const handleEditar = (detalle) => {
     setMensaje("");
     setErrorAPI("");
     setDetalleEnEdicion(detalle);
-    reset({ producto: detalle.producto, cantidad: detalle.cantidad });
+    reset({ producto: detalle.producto, cantidad: detalle.cantidad }); // carga ese detalle en el formulario
   };
 
   const handleCancelar = () => {
@@ -119,7 +120,7 @@ export default function VentaDetallePage({ params }) {
     setMensaje("");
 
     try {
-      if (detalleEnEdicion) {
+      if (detalleEnEdicion) { // editando → PATCH; agregando → POST
         await editarDetalle(detalleEnEdicion.id, { venta: venta.id, ...data });
       } else {
         await crearDetalle({ venta: venta.id, ...data });
@@ -128,19 +129,19 @@ export default function VentaDetallePage({ params }) {
       setDetalleEnEdicion(null);
       reset(VACIO);
       setMensaje("Detalle guardado.");
-      setVersion((v) => v + 1);
+      setVersion((v) => v + 1); // recarga la venta para ver el total nuevo
     } catch (err) {
       setErrorAPI(err.message);
     }
   };
 
   const handleBorrar = async () => {
-    if (!confirm("¿Seguro que querés dar de baja esta venta?")) return;
+    if (!confirm("¿Seguro que querés dar de baja esta venta?")) return; // si cancela, no hace nada
 
     setErrorAPI("");
 
     try {
-      await borrarVenta(venta.id);
+      await borrarVenta(venta.id); // DELETE ventas/{id}/borrado_logico/
       router.push("/ventas");
     } catch (err) {
       setErrorAPI(err.message);
@@ -148,7 +149,7 @@ export default function VentaDetallePage({ params }) {
   };
 
   if (noEncontrada) {
-    notFound();
+    notFound(); // muestra ventas/not-found.jsx
   }
 
   if (cargando) {

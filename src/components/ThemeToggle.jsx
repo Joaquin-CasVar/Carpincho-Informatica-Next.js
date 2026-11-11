@@ -5,9 +5,10 @@ import Icon from "@/components/Icon";
 
 // Botón del header que alterna entre modo claro y oscuro (usa el ThemeContext)
 export default function ThemeToggle() {
-  const { tema, cambiarTema } = useTheme();
+  const { tema, cambiarTema } = useTheme(); // lee el tema del Context
   const oscuro = tema === "oscuro";
 
+  // En oscuro muestra el sol (para pasar a claro) y en claro la luna
   return (
     <button
       type="button"

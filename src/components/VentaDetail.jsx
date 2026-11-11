@@ -36,6 +36,7 @@ export default function VentaDetail({ venta, productos = [], onEditarDetalle }) 
             </tr>
           </thead>
           <tbody>
+            {/* una fila por cada producto de la venta */}
             {venta.detalles.map((detalle) => (
               <tr key={detalle.id}>
                 <td className="font-medium">{nombreProducto(detalle.producto)}</td>

@@ -7,14 +7,15 @@ import Icon from "@/components/Icon";
 import { listarVentas } from "@/lib/api";
 
 export default function VentasPage() {
-  const [ventas, setVentas] = useState([]);
-  const [pagina, setPagina] = useState(1);
-  const [total, setTotal] = useState(null);
+  const [ventas, setVentas] = useState([]); // ventas de la página actual
+  const [pagina, setPagina] = useState(1); // la API manda de a 10 ventas por página
+  const [total, setTotal] = useState(null); // cantidad total de ventas
   const [haySiguiente, setHaySiguiente] = useState(false);
   const [hayAnterior, setHayAnterior] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
+  // Pide las ventas a la API cada vez que cambia "pagina"
   useEffect(() => {
     let cancelado = false;
 
@@ -23,13 +24,13 @@ export default function VentasPage() {
       setError("");
 
       try {
-        const data = await listarVentas(pagina);
+        const data = await listarVentas(pagina); // GET ventas/?page=N
 
         if (cancelado) return;
 
-        setVentas(data.results ?? []);
+        setVentas(data.results ?? []); // la API responde { count, next, previous, results }
         setTotal(data.count ?? null);
-        setHaySiguiente(Boolean(data.next));
+        setHaySiguiente(Boolean(data.next)); // si hay "next", se habilita Siguiente
         setHayAnterior(Boolean(data.previous));
       } catch (err) {
         if (!cancelado) {
@@ -69,6 +70,7 @@ export default function VentasPage() {
         </p>
       )}
 
+      {/* cargando → tarjetas grises; sin ventas → mensaje; con ventas → la grilla */}
       {cargando ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map((n) => (

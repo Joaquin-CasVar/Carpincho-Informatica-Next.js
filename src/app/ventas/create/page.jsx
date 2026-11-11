@@ -11,8 +11,9 @@ import Icon from "@/components/Icon";
 
 export default function NuevaVentaPage() {
   const router = useRouter();
-  const [errorAPI, setErrorAPI] = useState("");
+  const [errorAPI, setErrorAPI] = useState(""); // error que devuelve la API, si hay
 
+  // React Hook Form + Zod: valida los campos antes de enviar
   const {
     register,
     handleSubmit,
@@ -27,11 +28,12 @@ export default function NuevaVentaPage() {
     },
   });
 
+  // Solo se ejecuta si los datos pasaron la validación de Zod
   const onSubmit = async (data) => {
     setErrorAPI("");
 
     try {
-      const venta = await crearVenta(data);
+      const venta = await crearVenta(data); // POST ventas/
       // Se va al detalle de la venta nueva para cargarle los productos
       router.push(`/ventas/${venta.id}`);
     } catch (err) {

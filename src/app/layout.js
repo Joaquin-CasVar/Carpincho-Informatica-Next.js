@@ -43,6 +43,7 @@ export default function RootLayout({ children }) {
         <script dangerouslySetInnerHTML={{ __html: scriptTema }} />
       </head>
       <body className="min-h-full flex flex-col">
+        {/* ThemeProvider: comparte el tema (claro/oscuro) con toda la app */}
         <ThemeProvider>
           <Header />
           <main className="flex flex-1 flex-col">{children}</main>

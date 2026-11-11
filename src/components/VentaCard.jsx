@@ -2,6 +2,7 @@ import Link from "next/link";
 import Icon from "@/components/Icon";
 import { formatearFecha, formatearPrecio } from "@/lib/formatters";
 
+// Tarjeta de una venta en el listado: toda la tarjeta es un link al detalle
 export default function VentaCard({ venta }) {
   return (
     <Link

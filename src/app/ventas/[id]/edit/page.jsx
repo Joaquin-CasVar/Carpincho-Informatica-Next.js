@@ -19,6 +19,7 @@ export default function EditarVentaPage({ params }) {
   const [error, setError] = useState("");
   const [errorAPI, setErrorAPI] = useState("");
 
+  // Formulario de la venta (mismas reglas que al crear: ventaSchema)
   const {
     register,
     handleSubmit,
@@ -44,6 +45,7 @@ export default function EditarVentaPage({ params }) {
 
         if (cancelado) return;
 
+        // Completa el formulario con los datos actuales de la venta
         reset({
           cliente: venta.cliente,
           vendedor: venta.vendedor,
@@ -76,15 +78,15 @@ export default function EditarVentaPage({ params }) {
     setErrorAPI("");
 
     try {
-      await editarVenta(id, data);
-      router.push(`/ventas/${id}`);
+      await editarVenta(id, data); // PATCH ventas/{id}/
+      router.push(`/ventas/${id}`); // vuelve al detalle
     } catch (err) {
       setErrorAPI(err.message);
     }
   };
 
   if (noEncontrada) {
-    notFound();
+    notFound(); // muestra ventas/not-found.jsx
   }
 
   if (cargando) {

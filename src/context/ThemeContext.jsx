@@ -41,6 +41,7 @@ function obtenerTemaServidor() {
 }
 
 export function ThemeProvider({ children }) {
+  // Lee el tema actual y se actualiza solo cuando cambia (igual que AuthControls con la sesión)
   const tema = useSyncExternalStore(
     suscribirse,
     obtenerTema,
@@ -48,13 +49,14 @@ export function ThemeProvider({ children }) {
   );
 
   function cambiarTema() {
-    const nuevoTema = tema === "oscuro" ? "claro" : "oscuro";
+    const nuevoTema = tema === "oscuro" ? "claro" : "oscuro"; // el contrario del actual
 
-    document.documentElement.classList.toggle("dark", nuevoTema === "oscuro");
-    localStorage.setItem("tema", nuevoTema);
-    window.dispatchEvent(new Event("tema-cambiado"));
+    document.documentElement.classList.toggle("dark", nuevoTema === "oscuro"); // pone o saca "dark": los colores cambian solos
+    localStorage.setItem("tema", nuevoTema); // se recuerda para la próxima visita
+    window.dispatchEvent(new Event("tema-cambiado")); // avisa a los componentes que usan el tema
   }
 
+  // value: lo que el Context comparte con toda la app
   return (
     <ThemeContext.Provider value={{ tema, cambiarTema }}>
       {children}
@@ -62,6 +64,7 @@ export function ThemeProvider({ children }) {
   );
 }
 
+// Para usar el tema en cualquier componente cliente: const { tema, cambiarTema } = useTheme()
 export function useTheme() {
   return useContext(ThemeContext);
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Icon from "@/components/Icon";
 
+// Se muestra cuando la venta no existe (notFound() en el detalle y en editar)
 export default function VentaNoEncontrada() {
   return (
     <section className="card flex flex-col items-center gap-4 px-6 py-14 text-center">

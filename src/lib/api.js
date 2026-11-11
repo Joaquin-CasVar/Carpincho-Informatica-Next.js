@@ -551,7 +551,7 @@ export function desactivarVendedor(id) {
 // contenido). Si la API responde con error, lanza un Error con el mensaje ya
 // armado y el status en error.status.
 async function llamar(ruta, { method = 'GET', body } = {}) {
-  const token = sessionStorage.getItem('access');
+  const token = sessionStorage.getItem('access'); // token que guardó el login
 
   if (!token) {
     throw new Error('Tenés que iniciar sesión.');
@@ -560,13 +560,13 @@ async function llamar(ruta, { method = 'GET', body } = {}) {
     method,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token}`, // la API pide el token para ventas
     },
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? JSON.stringify(body) : undefined, // los datos van como JSON
     cache: 'no-store',
   });
 
-  const data = await response.json().catch(() => null);
+  const data = await response.json().catch(() => null); // si no hay cuerpo, queda null
 
   if (!response.ok) {
     // La API devuelve { detail: "mensaje" } o { campo: ["mensaje"] }
@@ -585,7 +585,7 @@ async function llamar(ruta, { method = 'GET', body } = {}) {
         : 'Error al comunicarse con la API';
 
     const error = new Error(mensaje);
-    error.status = response.status;
+    error.status = response.status; // ej. 404, para mostrar "no encontrada"
     throw error;
   }
 
@@ -672,17 +672,21 @@ export async function listarProductos() {
 // cada vez que se llama (no lo recalcula), así que después se deja el total
 // igual a la suma real de los subtotales. Si el Back lo corrige, sigue andando.
 async function actualizarTotal(detalleId, ventaId) {
+  // 1) el Back calcula precio unitario y subtotal del detalle
   await llamar(`detalles-venta/${detalleId}/calcular_subtotal/`, {
     method: 'POST',
   });
 
+  // 2) se trae la venta con todos sus detalles
   const venta = await obtenerVenta(ventaId);
 
+  // 3) se suman los subtotales
   const total = venta.detalles.reduce(
     (suma, detalle) => suma + Number(detalle.subtotal),
     0
   );
 
+  // 4) se guarda ese total en la venta
   await llamar(`ventas/${ventaId}/`, {
     method: 'PATCH',
     body: { total: total.toFixed(2) },
