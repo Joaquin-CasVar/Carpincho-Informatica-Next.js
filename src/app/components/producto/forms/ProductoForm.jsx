@@ -34,46 +34,46 @@ export default function ProductoForm({ form, producto }) {
   return (
 
     <form >
-      <div className='mt-10 grid grid-cols-3 gap-3'>
+      <div className='grid gap-5 sm:grid-cols-2 lg:grid-cols-3'>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Nombre <label className='text-sm text-red-800 animate-pulse'>{errors.nombre && "*" + errors.nombre.message}</label></p>
+          <p className='label'>Nombre <label className='ml-1 text-xs font-normal text-destructive'>{errors.nombre && "*" + errors.nombre.message}</label></p>
           <input
             type="text"
             placeholder='Nombre'
-            className='p-2 border border-zinc-600 rounded-md my-4'
+            className='input'
             {...register("nombre")}
           />
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Precio <label className='text-sm text-red-800 animate-pulse'>{errors.precio && "*" + errors.precio.message}</label></p>
-          <div className='p-2 border border-zinc-600 rounded-md my-4'>
-            <span>$</span>
+          <p className='label'>Precio <label className='ml-1 text-xs font-normal text-destructive'>{errors.precio && "*" + errors.precio.message}</label></p>
+          <div className='input flex items-center gap-2 focus-within:border-primary focus-within:ring-3 focus-within:ring-ring/25'>
+            <span className='text-sm text-muted-foreground'>$</span>
             <input
               type="number"
               placeholder='0.00'
-              className=""
+              className='w-full min-w-0 bg-transparent outline-none'
               {...register("precio", { valueAsNumber: true })}
             />
           </div>
         </div>
 
         <div className="flex flex-col">
-          <p className='text-zinc-400 text-lg'>Stock <label className='text-sm text-red-800 animate-pulse'>{errors.stock && "*" + errors.stock.message}</label></p>
+          <p className='label'>Stock <label className='ml-1 text-xs font-normal text-destructive'>{errors.stock && "*" + errors.stock.message}</label></p>
 
           <input
             type="number"
             placeholder="0"
-            className='p-2 border border-zinc-600 rounded-md my-4'
+            className='input'
             {...register('stock', { valueAsNumber: true })}
           />
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Fabricante <label className='text-sm text-red-800 animate-pulse'>{errors.fabricante && "*" + errors.fabricante.message}</label></p>
+          <p className='label'>Fabricante <label className='ml-1 text-xs font-normal text-destructive'>{errors.fabricante && "*" + errors.fabricante.message}</label></p>
           <select
-            className='cursor-pointer p-2 border border-zinc-600 rounded-md my-4'
+            className='input cursor-pointer'
             {...register("fabricante", { valueAsNumber: true })}
           >
 
@@ -86,9 +86,9 @@ export default function ProductoForm({ form, producto }) {
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Color <label className='text-sm text-red-800 animate-pulse'>{errors.color && "*" + errors.color.message}</label></p>
+          <p className='label'>Color <label className='ml-1 text-xs font-normal text-destructive'>{errors.color && "*" + errors.color.message}</label></p>
           <select
-            className='cursor-pointer p-2 border border-zinc-600 rounded-md my-4'
+            className='input cursor-pointer'
             {...register("color", { valueAsNumber: true })}
           >
 
@@ -101,9 +101,9 @@ export default function ProductoForm({ form, producto }) {
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Tipo <label className='text-sm text-red-800 animate-pulse'>{errors.tipo && "*" + errors.tipo.message}</label></p>
+          <p className='label'>Tipo <label className='ml-1 text-xs font-normal text-destructive'>{errors.tipo && "*" + errors.tipo.message}</label></p>
           <select
-            className='cursor-pointer p-2 border border-zinc-600 rounded-md my-4'
+            className='input cursor-pointer'
             {...register("tipo", { valueAsNumber: true })}
           >
 
@@ -114,12 +114,12 @@ export default function ProductoForm({ form, producto }) {
             ))}
           </select>
 
-          <div className='flex flex-col'>
-            <p className='text-zinc-400 text-lg'>Imagen <label className='text-sm text-red-800 animate-pulse'>{errors.imagen && "*" + errors.imagen.message}</label></p>
+          <div className='mt-5 flex flex-col'>
+            <p className='label'>Imagen <label className='ml-1 text-xs font-normal text-destructive'>{errors.imagen && "*" + errors.imagen.message}</label></p>
             <input
               type="text"
               placeholder='https://link/de/la/imagen.com'
-              className="p-2 border border-zinc-600 rounded-md my-4"
+              className='input'
               {...register("imagen")}
             />
           </div>

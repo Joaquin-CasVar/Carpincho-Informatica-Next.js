@@ -81,78 +81,75 @@ export default function VendedoresPage() {
     <main className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">
+          <h1 className="page-title">
             Gestión de vendedores
           </h1>
 
-          <p className="mt-2">
+          <p className="page-subtitle">
             Consultá y administrá los vendedores registrados.
           </p>
         </div>
 
         <Link
           href="/vendedores/nuevo"
-          className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+          className="btn btn-primary"
         >
           + Nuevo vendedor
         </Link>
       </div>
 
       {mensaje && (
-        <p role="status" className="text-green-600">
+        <p role="status" className="alert-success">
           {mensaje}
         </p>
       )}
 
       {error && (
-        <p role="alert" className="text-red-500">
+        <p role="alert" className="alert-error">
           {error}
         </p>
       )}
 
       {cargando ? (
-        <p>Cargando vendedores...</p>
+        <p className="text-sm text-muted-foreground">Cargando vendedores...</p>
       ) : !error && vendedores.length === 0 ? (
-        <p>No hay vendedores registrados.</p>
+        <p className="text-sm text-muted-foreground">No hay vendedores registrados.</p>
       ) : !error ? (
         <>
-          <div className="overflow-x-auto rounded-lg border">
-            <table className="w-full border-collapse text-left">
-              <thead className="border-b bg-gray-100 text-gray-900">
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
                 <tr>
-                  <th className="p-3">ID</th>
-                  <th className="p-3">Usuario</th>
-                  <th className="p-3">Nombre</th>
-                  <th className="p-3">Email</th>
-                  <th className="p-3">Salario</th>
-                  <th className="p-3">Acciones</th>
+                  <th>ID</th>
+                  <th>Usuario</th>
+                  <th>Nombre</th>
+                  <th>Email</th>
+                  <th>Salario</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
 
               <tbody>
                 {vendedores.map((vendedor) => (
-                  <tr
-                    key={vendedor.id}
-                    className="border-b last:border-b-0"
-                  >
-                    <td className="p-3">
+                  <tr key={vendedor.id}>
+                    <td>
                       {vendedor.id}
                     </td>
 
-                    <td className="p-3">
+                    <td>
                       {vendedor.persona?.username || '-'}
                     </td>
 
-                    <td className="p-3">
+                    <td>
                       {vendedor.persona?.first_name || ''}{' '}
                       {vendedor.persona?.last_name || ''}
                     </td>
 
-                    <td className="p-3">
+                    <td>
                       {vendedor.persona?.email || '-'}
                     </td>
 
-                    <td className="p-3">
+                    <td>
                       {Number(vendedor.salario).toLocaleString(
                         'es-AR',
                         {
@@ -163,11 +160,11 @@ export default function VendedoresPage() {
                       )}
                     </td>
 
-                    <td className="p-3">
+                    <td>
                       <div className="flex flex-wrap items-center gap-4">
                         <Link
                           href={`/vendedores/${vendedor.id}/editar`}
-                          className="font-medium text-blue-500 hover:underline"
+                          className="link"
                         >
                           Editar
                         </Link>

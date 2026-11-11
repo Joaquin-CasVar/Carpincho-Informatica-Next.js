@@ -1,26 +1,36 @@
+'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+const pestanas = [
+  { href: '/about', label: 'Sobre nosotros' },
+  { href: '/about/faq', label: 'Preguntas frecuentes' },
+  { href: '/about/contacto', label: 'Contacto' },
+];
 
 export default function AboutLayout({ children }) {
+  const pathname = usePathname();
+
   return (
-    <div className="min-h-screen">
-      <nav className="border-b border-gray-700 p-4">
-        <div className="mx-auto flex max-w-5xl flex-wrap gap-6">
-          <Link href="/about" className="hover:text-blue-500">
-            Sobre nosotros
+    <div className="container-page flex flex-col gap-8 py-10">
+      <nav className="flex max-w-full gap-1 self-start overflow-x-auto rounded-xl border border-border bg-muted/50 p-1">
+        {pestanas.map((pestana) => (
+          <Link
+            key={pestana.href}
+            href={pestana.href}
+            className={`rounded-lg px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors ${
+              pathname === pestana.href
+                ? 'bg-card text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {pestana.label}
           </Link>
-
-          <Link href="/about/faq" className="hover:text-blue-500">
-            Preguntas frecuentes
-          </Link>
-
-          <Link href="/about/contacto" className="hover:text-blue-500">
-            Contacto
-          </Link>
-        </div>
+        ))}
       </nav>
 
-      <div className="mx-auto max-w-5xl p-6">
+      <div>
         {children}
       </div>
     </div>

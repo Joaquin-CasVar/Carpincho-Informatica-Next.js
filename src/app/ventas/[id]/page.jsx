@@ -6,6 +6,7 @@ import { notFound, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import VentaDetail from "@/components/VentaDetail";
+import Icon from "@/components/Icon";
 import { detalleVentaSchema } from "@/schemas/ventaSchema";
 import {
   borrarVenta,
@@ -151,32 +152,41 @@ export default function VentaDetallePage({ params }) {
   }
 
   if (cargando) {
-    return <p>Cargando venta...</p>;
+    return (
+      <div className="flex flex-col gap-4">
+        <div className="skeleton h-24" />
+        <div className="skeleton h-56" />
+      </div>
+    );
   }
 
   if (error || !venta) {
     return (
-      <p role="alert">
+      <p role="alert" className="alert-error">
         {error || "No se pudo cargar la venta"}
       </p>
     );
   }
 
   return (
-    <section>
-      <div>
-        <Link href="/ventas">
-          ← Volver a ventas
+    <section className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link href="/ventas" className="btn btn-ghost btn-sm">
+          <Icon name="volver" className="size-4" />
+          Volver a ventas
         </Link>
 
-        <div>
-          <Link href={`/ventas/${venta.id}/edit`}>
+        <div className="flex gap-2">
+          <Link href={`/ventas/${venta.id}/edit`} className="btn btn-secondary btn-sm">
+            <Icon name="editar" className="size-4" />
             Editar venta
           </Link>
           <button
             type="button"
             onClick={handleBorrar}
+            className="btn btn-danger btn-sm"
           >
+            <Icon name="basura" className="size-4" />
             Dar de baja
           </button>
         </div>
@@ -189,7 +199,7 @@ export default function VentaDetallePage({ params }) {
       />
 
       {mensaje && (
-        <p role="status">
+        <p role="status" className="alert-success">
           {mensaje}
         </p>
       )}
@@ -197,54 +207,64 @@ export default function VentaDetallePage({ params }) {
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
+        className="card flex flex-col gap-5 p-6"
       >
-        <h3>
-          {detalleEnEdicion
-            ? `Editar detalle #${detalleEnEdicion.id}`
-            : "Agregar detalle"}
-        </h3>
-
         <div>
-          <label htmlFor="producto">
-            Producto
-          </label>
-          <select id="producto" {...register("producto")}>
-            <option value="">Seleccioná un producto</option>
-            {productos.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nombre}
-              </option>
-            ))}
-          </select>
-          {errors.producto && (
-            <p>{errors.producto.message}</p>
-          )}
+          <h3 className="text-lg font-semibold">
+            {detalleEnEdicion
+              ? `Editar detalle #${detalleEnEdicion.id}`
+              : "Agregar detalle"}
+          </h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Elegí un producto y la cantidad. El subtotal y el total se calculan solos.
+          </p>
         </div>
 
-        <div>
-          <label htmlFor="cantidad">
-            Cantidad
-          </label>
-          <input
-            id="cantidad"
-            type="number"
-            {...register("cantidad")}
-          />
-          {errors.cantidad && (
-            <p>{errors.cantidad.message}</p>
-          )}
+        <div className="grid gap-4 sm:grid-cols-[1fr_10rem]">
+          <div>
+            <label htmlFor="producto" className="label">
+              Producto
+            </label>
+            <select id="producto" className="input" {...register("producto")}>
+              <option value="">Seleccioná un producto</option>
+              {productos.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.nombre}
+                </option>
+              ))}
+            </select>
+            {errors.producto && (
+              <p className="field-error">{errors.producto.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="cantidad" className="label">
+              Cantidad
+            </label>
+            <input
+              id="cantidad"
+              type="number"
+              className="input"
+              {...register("cantidad")}
+            />
+            {errors.cantidad && (
+              <p className="field-error">{errors.cantidad.message}</p>
+            )}
+          </div>
         </div>
 
         {errorAPI && (
-          <p role="alert">
+          <p role="alert" className="alert-error">
             {errorAPI}
           </p>
         )}
 
-        <div>
+        <div className="flex flex-wrap gap-3">
           <button
             type="submit"
             disabled={isSubmitting}
+            className="btn btn-primary"
           >
             {isSubmitting
               ? "Guardando..."
@@ -256,6 +276,7 @@ export default function VentaDetallePage({ params }) {
             <button
               type="button"
               onClick={handleCancelar}
+              className="btn btn-secondary"
             >
               Cancelar
             </button>

@@ -86,24 +86,24 @@ export default function EditarVendedorPage({ params }) {
   }
 
   if (cargando) {
-    return <p className="p-6">Cargando vendedor...</p>;
+    return <p className="flex items-center gap-2 py-6 text-sm text-muted-foreground">Cargando vendedor...</p>;
   }
 
   if (!vendedor) {
     return (
-      <p role="alert" className="p-6 text-red-500">
+      <p role="alert" className="alert-error">
         {error || 'No se encontró el vendedor'}
       </p>
     );
   }
 
   return (
-    <main className="mx-auto max-w-lg p-6">
-      <h1 className="mb-6 text-2xl font-bold">
+    <main className="card mx-auto w-full max-w-lg p-6 sm:p-8">
+      <h1 className="mb-6 text-2xl font-semibold tracking-tight">
         Editar vendedor #{id}
       </h1>
 
-      <div className="mb-6 rounded bg-gray-100 p-4 text-gray-900">
+      <div className="mb-6 space-y-1 rounded-xl border border-border bg-muted/50 p-4 text-sm">
         <p>
           <strong>Usuario:</strong>{' '}
           {vendedor.persona?.username || '-'}
@@ -142,7 +142,7 @@ export default function EditarVendedorPage({ params }) {
         />
 
         {error && (
-          <p role="alert" className="text-red-500">
+          <p role="alert" className="alert-error">
             {error}
           </p>
         )}
@@ -150,7 +150,7 @@ export default function EditarVendedorPage({ params }) {
         <button
           type="submit"
           disabled={guardando}
-          className="w-full rounded bg-blue-600 p-3 text-white disabled:opacity-50"
+          className="btn btn-primary w-full"
         >
           {guardando ? 'Guardando...' : 'Guardar cambios'}
         </button>

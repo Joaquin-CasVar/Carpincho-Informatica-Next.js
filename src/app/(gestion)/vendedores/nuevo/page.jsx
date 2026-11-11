@@ -66,8 +66,8 @@ export default function NuevoVendedorPage() {
   }
 
   return (
-    <main className="mx-auto max-w-lg p-6">
-      <h1 className="mb-6 text-2xl font-bold">
+    <main className="card mx-auto w-full max-w-lg p-6 sm:p-8">
+      <h1 className="mb-6 text-2xl font-semibold tracking-tight">
         Crear vendedor
       </h1>
 
@@ -99,7 +99,7 @@ export default function NuevoVendedorPage() {
         />
 
         {errorAPI && (
-          <p role="alert" className="text-red-500">
+          <p role="alert" className="alert-error">
             {errorAPI}
           </p>
         )}
@@ -107,7 +107,7 @@ export default function NuevoVendedorPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded bg-blue-600 p-3 text-white disabled:opacity-50"
+          className="btn btn-primary w-full"
         >
           {loading ? 'Guardando...' : 'Crear vendedor'}
         </button>

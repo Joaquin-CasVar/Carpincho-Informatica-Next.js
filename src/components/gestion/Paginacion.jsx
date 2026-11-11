@@ -17,7 +17,7 @@ export default function Paginacion({
             <p>Página {pagina}</p>
 
             {total !== null && (
-            <p className="text-sm opacity-70">
+            <p className="text-sm text-muted-foreground">
                 Total de {nombreEntidad}: {total}
             </p>
             )}
@@ -28,7 +28,7 @@ export default function Paginacion({
             type="button"
             disabled={!hayAnterior || cargando}
             onClick={() => onCambiarPagina(Math.max(1, pagina - 1))}
-            className="rounded border px-4 py-2 disabled:opacity-40"
+            className="btn btn-secondary btn-sm"
             >
             Anterior
             </button>
@@ -37,7 +37,7 @@ export default function Paginacion({
             type="button"
             disabled={!haySiguiente || cargando}
             onClick={() => onCambiarPagina(pagina + 1)}
-            className="rounded border px-4 py-2 disabled:opacity-40"
+            className="btn btn-secondary btn-sm"
             >
             Siguiente
             </button>

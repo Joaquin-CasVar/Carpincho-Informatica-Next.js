@@ -99,81 +99,98 @@ export default function page() {
   }, [])
 
   return (
-    <div>
-      <h1 className="text-9xl">Estadísticas</h1>
-
-      <div className="max-w-2xl flex flex-col gap-4 mb-8">
-        <div className='flex items-center gap-1'>
-          <p className='text-zinc-400 text-lg'>Año: </p>
-          <select
-            className='cursor-pointer p-2 border border-zinc-600 rounded-md'
-            {...register('year', {
-              onChange: handleSubmit(onSubmit),
-              valueAsNumber: true
-            })}
-          >
-
-            <option value={2026}>2026</option>
-            <option value={2025}>2025</option>
-
-          </select>
-        </div>
-
-        <BarChart
-          barLabels={monthArray}
-          dataLabel={'$/mes'}
-          data={totalesMensuales}
-          lineColor={'68.5% 0.169 237.323'}
-          title={"Total de venta mensual"}
-          axis={'x'}
-        />
-
-        <BarChart
-          barLabels={monthArray}
-          dataLabel={'ventas/mes'}
-          data={ventasMensuales}
-          lineColor={'62.7% 0.194 149.214'}
-          title={"Numero de ventas mensual"}
-          axis={'x'}
-        />
+    <div className="container-page flex flex-col gap-10 py-10">
+      <div className="border-b border-border pb-6">
+        <h1 className="page-title">Estadísticas</h1>
+        <p className="page-subtitle">Cómo vienen las ventas de la tienda, por mes y por vendedor.</p>
       </div>
 
-      <div className="max-w-2xl flex flex-col gap-4">
-        <div className='flex items-center gap-1'>
-          <p className='text-zinc-400 text-lg'>Mes: </p>
-          <select
-            className='cursor-pointer p-2 border border-zinc-600 rounded-md'
-            {...register('month', {
-              onChange: handleSubmit(onSubmit),
-              valueAsNumber: true
-            })}
-          >
+      <section className="flex flex-col gap-4">
+        <div className='flex flex-wrap items-center justify-between gap-3'>
+          <h2 className="text-lg font-semibold">Por mes</h2>
+          <label className='flex items-center gap-2 text-sm text-muted-foreground'>
+            Año
+            <select
+              className='input w-auto cursor-pointer'
+              {...register('year', {
+                onChange: handleSubmit(onSubmit),
+                valueAsNumber: true
+              })}
+            >
 
-            {monthArray.map((month, key) => (
-              <option key={key} value={key + 1}>{month}</option>
-            ))}
+              <option value={2026}>2026</option>
+              <option value={2025}>2025</option>
 
-          </select>
+            </select>
+          </label>
         </div>
 
-        <BarChart
-          barLabels={vendedores}
-          dataLabel={'$/vendedor'}
-          data={totalesVendedor}
-          lineColor={'49.6% 0.265 301.924'}
-          title={'Total por vendedor'}
-          axis={'y'}
-        />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="card p-5">
+            <BarChart
+              barLabels={monthArray}
+              dataLabel={'$/mes'}
+              data={totalesMensuales}
+              title={"Total de venta mensual"}
+              axis={'x'}
+            />
+          </div>
 
-        <BarChart
-          barLabels={vendedores}
-          dataLabel={'ventas/vendedor'}
-          data={ventasVendedor}
-          lineColor={'64.6% 0.222 41.116'}
-          title={'Numero de ventas por vendedor'}
-          axis={'y'}
-        />
-      </div>
-    </div >
+          <div className="card p-5">
+            <BarChart
+              barLabels={monthArray}
+              dataLabel={'ventas/mes'}
+              data={ventasMensuales}
+              title={"Número de ventas mensual"}
+              axis={'x'}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <div className='flex flex-wrap items-center justify-between gap-3'>
+          <h2 className="text-lg font-semibold">Por vendedor</h2>
+          <label className='flex items-center gap-2 text-sm text-muted-foreground'>
+            Mes
+            <select
+              className='input w-auto cursor-pointer'
+              {...register('month', {
+                onChange: handleSubmit(onSubmit),
+                valueAsNumber: true
+              })}
+            >
+
+              {monthArray.map((month, key) => (
+                <option key={key} value={key + 1}>{month}</option>
+              ))}
+
+            </select>
+          </label>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="card p-5">
+            <BarChart
+              barLabels={vendedores}
+              dataLabel={'$/vendedor'}
+              data={totalesVendedor}
+              title={'Total por vendedor'}
+              axis={'y'}
+            />
+          </div>
+
+          <div className="card p-5">
+            <BarChart
+              barLabels={vendedores}
+              dataLabel={'ventas/vendedor'}
+              data={ventasVendedor}
+              title={'Número de ventas por vendedor'}
+              axis={'y'}
+            />
+          </div>
+        </div>
+      </section>
+    </div>
   )
 }

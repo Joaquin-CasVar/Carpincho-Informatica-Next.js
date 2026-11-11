@@ -30,22 +30,27 @@ export default function DeleteModal({ object, route, isOpen, onClose }) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs">
-      <div className="w-full max-w-xl bg-zinc-900 border-zinc-700 rounded-lg 
-      p-4 flex flex-col items-center gap-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+      <div role="dialog" aria-modal="true" className="card flex w-full max-w-md flex-col items-center gap-4 p-6 text-center shadow-2xl">
 
-        <span className="text-2xl">Estas seguro de que deseas eliminar {object.nombre}?</span>
+        <span className="grid size-12 place-items-center rounded-full bg-destructive/10 text-destructive">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="size-6" aria-hidden="true">
+            <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6" />
+          </svg>
+        </span>
 
+        <span className="text-lg font-semibold">¿Estás seguro de que deseas eliminar {object.nombre}?</span>
+        <p className="text-sm text-muted-foreground">Esta acción no se puede deshacer.</p>
 
-        <div className="w-full max-w-xl flex justify-between">
+        <div className="mt-2 flex w-full gap-3">
           <button
-            className="bg-zinc-700 px-3 py-1.5 rounded cursor-pointer"
+            className="btn btn-secondary flex-1"
             onClick={onClose}
           >
             No, cancelar
           </button>
 
-          <button onClick={handleDelete} className="bg-red-500 px-3 py-1.5 rounded cursor-pointer font-bold">
+          <button onClick={handleDelete} className="btn btn-danger flex-1">
             Si, Eliminar
           </button>
         </div>
