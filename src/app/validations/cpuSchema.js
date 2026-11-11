@@ -1,6 +1,8 @@
 import z from "zod";
 
 export const cpuSchema = z.object({
+    producto: z.int()
+        .min(1, 'Debe pasar el id del producto'),
     arquitectura: z.int()
         .min(1, 'Debe seleccionar una arquitectura'),
     socket: z.int()
@@ -20,4 +22,6 @@ export const cpuSchema = z.object({
     tdp: z.number('El TDP es obligatorio')
         .int('El TDP debe ser un numero entero')
         .positive('El TDP debe ser un numero positivo'),
+    graficos_integrados: z.boolean('Los graficos integrados deben ser Verdadero o Falso'),
+    incluye_cooler: z.boolean('Incluye cooler debe ser Verdadero o Falso'),
 })
