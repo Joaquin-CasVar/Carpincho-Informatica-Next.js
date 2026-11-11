@@ -1,5 +1,6 @@
 
 import Link from 'next/link';
+import Icon from '@/components/Icon';
 
 const secciones = [
   {
@@ -19,15 +20,21 @@ const secciones = [
   },
 ];
 
+const iconos = {
+  Usuarios: 'usuarios',
+  Clientes: 'usuario',
+  Vendedores: 'vendedor',
+};
+
 export default function AdminPage() {
   return (
     <main className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">
+        <h1 className="page-title">
           Panel de administración
         </h1>
 
-        <p className="mt-2">
+        <p className="page-subtitle">
           Gestioná los usuarios, clientes y vendedores
           de Carpincho Informática.
         </p>
@@ -37,19 +44,23 @@ export default function AdminPage() {
         {secciones.map((seccion) => (
           <article
             key={seccion.titulo}
-            className="rounded-xl border p-6"
+            className="card card-hover flex flex-col p-6"
           >
+            <span className="mb-4 grid size-11 place-items-center rounded-xl bg-accent text-accent-foreground">
+              <Icon name={iconos[seccion.titulo]} className="size-5" />
+            </span>
+
             <h2 className="text-xl font-semibold">
               {seccion.titulo}
             </h2>
 
-            <p className="my-4">
+            <p className="my-4 flex-1 text-sm text-muted-foreground">
               {seccion.descripcion}
             </p>
 
             <Link
               href={seccion.ruta}
-              className="inline-block rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+              className="btn btn-primary"
             >
               Administrar
             </Link>

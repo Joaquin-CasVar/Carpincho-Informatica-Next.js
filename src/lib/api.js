@@ -15,7 +15,7 @@ async function list(path) {
     let all = []
     while (true) {
         const res = await fetch(`${API_URL}${path}?page=${page}`, { cache: "no-store" });
-        if (!res.ok) throw new error(`La API respondió ${res.status} en ${path}`);
+        if (!res.ok) throw new Error(`La API respondió ${res.status} en ${path}`);
         const data = await res.json();
         if (Array.isArray(data)) return data;
         all = all.concat(data.results ?? []);
@@ -541,6 +541,8 @@ export function desactivarCliente(id) {
 // Desactivar vendedor
 export function desactivarVendedor(id) {
   return desactivarRegistro('vendedores', id);
+}
+
 // ---------------------------------------------------------------------------
 // VENTAS
 // ---------------------------------------------------------------------------
@@ -549,7 +551,7 @@ export function desactivarVendedor(id) {
 // contenido). Si la API responde con error, lanza un Error con el mensaje ya
 // armado y el status en error.status.
 async function llamar(ruta, { method = 'GET', body } = {}) {
-  const token = sessionStorage.getItem('access');
+  const token = sessionStorage.getItem('access'); // token que guardó el login
 
   if (!token) {
     throw new Error('Tenés que iniciar sesión.');
@@ -558,13 +560,13 @@ async function llamar(ruta, { method = 'GET', body } = {}) {
     method,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token}`, // la API pide el token para ventas
     },
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? JSON.stringify(body) : undefined, // los datos van como JSON
     cache: 'no-store',
   });
 
-  const data = await response.json().catch(() => null);
+  const data = await response.json().catch(() => null); // si no hay cuerpo, queda null
 
   if (!response.ok) {
     // La API devuelve { detail: "mensaje" } o { campo: ["mensaje"] }
@@ -583,7 +585,7 @@ async function llamar(ruta, { method = 'GET', body } = {}) {
         : 'Error al comunicarse con la API';
 
     const error = new Error(mensaje);
-    error.status = response.status;
+    error.status = response.status; // ej. 404, para mostrar "no encontrada"
     throw error;
   }
 
@@ -593,37 +595,37 @@ async function llamar(ruta, { method = 'GET', body } = {}) {
 
 //listar ventas (más nuevas primero)
 export function listarVentas(pagina = 1) {
-  return llamar(`/api/ventas/?ordering=-id&page=${pagina}`);
+  return llamar(`ventas/?ordering=-id&page=${pagina}`);
 }
 
 
 //obtener una venta con sus detalles GET
 export function obtenerVenta(id) {
-  return llamar(`/api/ventas/${id}/`);
+  return llamar(`ventas/${id}/`);
 }
 
 
 //crear venta POST
 export function crearVenta(datos) {
-  return llamar('/api/ventas/', { method: 'POST', body: datos });
+  return llamar('ventas/', { method: 'POST', body: datos });
 }
 
 
 //editar venta PATCH
 export function editarVenta(id, datos) {
-  return llamar(`/api/ventas/${id}/`, { method: 'PATCH', body: datos });
+  return llamar(`ventas/${id}/`, { method: 'PATCH', body: datos });
 }
 
 
 //dar de baja una venta (borrado lógico) DELETE
 export function borrarVenta(id) {
-  return llamar(`/api/ventas/${id}/borrado_logico/`, { method: 'DELETE' });
+  return llamar(`ventas/${id}/borrado_logico/`, { method: 'DELETE' });
 }
 
 
 //agregar un producto a una venta POST
 export async function crearDetalle(datos) {
-  const detalle = await llamar('/api/detalles-venta/', {
+  const detalle = await llamar('detalles-venta/', {
     method: 'POST',
     body: datos,
   });
@@ -636,7 +638,7 @@ export async function crearDetalle(datos) {
 
 //editar un producto de una venta PATCH
 export async function editarDetalle(id, datos) {
-  const detalle = await llamar(`/api/detalles-venta/${id}/`, {
+  const detalle = await llamar(`detalles-venta/${id}/`, {
     method: 'PATCH',
     body: datos,
   });
@@ -654,7 +656,7 @@ export async function listarProductos() {
   let hayMas = true;
 
   while (hayMas) {
-    const data = await llamar(`/api/productos/?page=${pagina}`);
+    const data = await llamar(`productos/?page=${pagina}`);
 
     productos.push(...data.results);
     hayMas = Boolean(data.next);
@@ -670,18 +672,22 @@ export async function listarProductos() {
 // cada vez que se llama (no lo recalcula), así que después se deja el total
 // igual a la suma real de los subtotales. Si el Back lo corrige, sigue andando.
 async function actualizarTotal(detalleId, ventaId) {
-  await llamar(`/api/detalles-venta/${detalleId}/calcular_subtotal/`, {
+  // 1) el Back calcula precio unitario y subtotal del detalle
+  await llamar(`detalles-venta/${detalleId}/calcular_subtotal/`, {
     method: 'POST',
   });
 
+  // 2) se trae la venta con todos sus detalles
   const venta = await obtenerVenta(ventaId);
 
+  // 3) se suman los subtotales
   const total = venta.detalles.reduce(
     (suma, detalle) => suma + Number(detalle.subtotal),
     0
   );
 
-  await llamar(`/api/ventas/${ventaId}/`, {
+  // 4) se guarda ese total en la venta
+  await llamar(`ventas/${ventaId}/`, {
     method: 'PATCH',
     body: { total: total.toFixed(2) },
   });

@@ -71,11 +71,11 @@ export default function ContactoPage() {
   return (
     <main className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">
+        <h1 className="page-title">
           Contacto
         </h1>
 
-        <p className="mt-2">
+        <p className="page-subtitle">
           ¿Tenés alguna consulta sobre nuestros productos?
           Completá el formulario para verificar los datos.
         </p>
@@ -88,7 +88,7 @@ export default function ContactoPage() {
       >
         {campos.map(([name, label]) => (
           <div key={name}>
-            <label htmlFor={name} className="mb-1 block">
+            <label htmlFor={name} className="label">
               {label}
             </label>
 
@@ -102,13 +102,13 @@ export default function ContactoPage() {
               aria-describedby={
                 errores[name] ? `${name}-error` : undefined
               }
-              className="w-full rounded border p-2"
+              className="input"
             />
 
             {errores[name] && (
               <p
                 id={`${name}-error`}
-                className="mt-1 text-sm text-red-500"
+                className="field-error"
               >
                 {errores[name]}
               </p>
@@ -117,7 +117,7 @@ export default function ContactoPage() {
         ))}
 
         <div>
-          <label htmlFor="mensaje" className="mb-1 block">
+          <label htmlFor="mensaje" className="label">
             Mensaje
           </label>
 
@@ -131,13 +131,13 @@ export default function ContactoPage() {
             aria-describedby={
               errores.mensaje ? 'mensaje-error' : undefined
             }
-            className="w-full rounded border p-2"
+            className="input"
           />
 
           {errores.mensaje && (
             <p
               id="mensaje-error"
-              className="mt-1 text-sm text-red-500"
+              className="field-error"
             >
               {errores.mensaje}
             </p>
@@ -145,14 +145,14 @@ export default function ContactoPage() {
         </div>
 
         {mensaje && (
-          <p role="status" className="text-amber-600">
+          <p role="status" className="text-warning">
             {mensaje}
           </p>
         )}
 
         <button
           type="submit"
-          className="rounded bg-blue-600 px-6 py-3 text-white"
+          className="btn btn-primary btn-lg"
         >
           Enviar consulta
         </button>

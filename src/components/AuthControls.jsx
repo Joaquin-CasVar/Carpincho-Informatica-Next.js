@@ -4,6 +4,7 @@
 import { useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import Icon from '@/components/Icon';
 
 function suscribirse(callback) {
   window.addEventListener('storage', callback);
@@ -51,25 +52,26 @@ export default function AuthControls() {
       <button
         type="button"
         onClick={cerrarSesion}
-        className="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+        className="btn btn-secondary btn-sm"
       >
+        <Icon name="salir" className="size-4" />
         Cerrar sesión
       </button>
     );
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2">
       <Link
         href="/account/login"
-        className="hover:underline"
+        className="btn btn-ghost btn-sm"
       >
         Iniciar sesión
       </Link>
 
       <Link
         href="/account/register"
-        className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+        className="btn btn-primary btn-sm"
       >
         Registrarse
       </Link>

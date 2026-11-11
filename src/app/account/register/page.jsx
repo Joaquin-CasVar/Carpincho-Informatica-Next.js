@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { registrarCliente } from '@/lib/api';
 import { registroSchema } from '@/schemas/registroSchema';
+import { LogoMarca } from '@/components/Logo';
 
 const datosIniciales = {
   username: '',
@@ -91,18 +92,19 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="mx-auto max-w-lg px-4 py-10">
-      <h1 className="mb-2 text-3xl font-bold">
+    <main className="card mx-4 my-12 p-6 sm:mx-auto sm:w-full sm:max-w-lg sm:p-8">
+      <LogoMarca className="mb-6 size-12" />
+      <h1 className="page-title mb-2">
         Crear cuenta
       </h1>
 
-      <p className="mb-6 text-sm opacity-70">
+      <p className="mb-6 text-sm text-muted-foreground">
         Completá tus datos para registrarte en Carpincho Informática.
       </p>
 
       {exito ? (
-        <div className="space-y-4 rounded-lg border p-6">
-          <p role="status" className="text-green-500">
+        <div className="card space-y-4 p-6">
+          <p role="status" className="alert-success">
             ¡Tu cuenta fue creada correctamente!
           </p>
 
@@ -110,7 +112,7 @@ export default function RegisterPage() {
 
           <Link
             href="/account/login"
-            className="inline-block rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            className="btn btn-primary"
           >
             Ir a iniciar sesión
           </Link>
@@ -121,7 +123,7 @@ export default function RegisterPage() {
             <div key={campo.name}>
               <label
                 htmlFor={campo.name}
-                className="mb-1 block font-medium"
+                className="label"
               >
                 {campo.label}
               </label>
@@ -145,13 +147,13 @@ export default function RegisterPage() {
                     ? `${campo.name}-error`
                     : undefined
                 }
-                className="w-full rounded border bg-transparent px-3 py-2"
+                className="input"
               />
 
               {errores[campo.name] && (
                 <p
                   id={`${campo.name}-error`}
-                  className="mt-1 text-sm text-red-500"
+                  className="field-error"
                 >
                   {errores[campo.name]}
                 </p>
@@ -160,7 +162,7 @@ export default function RegisterPage() {
           ))}
 
           {errorAPI && (
-            <p role="alert" className="text-sm text-red-500">
+            <p role="alert" className="field-error">
               {errorAPI}
             </p>
           )}
@@ -168,7 +170,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={cargando}
-            className="w-full rounded bg-blue-600 px-4 py-3 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            className="btn btn-primary w-full"
           >
             {cargando ? 'Registrando...' : 'Crear cuenta'}
           </button>
@@ -177,7 +179,7 @@ export default function RegisterPage() {
             ¿Ya tenés una cuenta?{' '}
             <Link
               href="/account/login"
-              className="text-blue-500 hover:underline"
+              className="link"
             >
               Iniciar sesión
             </Link>

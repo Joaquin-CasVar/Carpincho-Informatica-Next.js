@@ -3,17 +3,19 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import VentaCard from "@/components/VentaCard";
+import Icon from "@/components/Icon";
 import { listarVentas } from "@/lib/api";
 
 export default function VentasPage() {
-  const [ventas, setVentas] = useState([]);
-  const [pagina, setPagina] = useState(1);
-  const [total, setTotal] = useState(null);
+  const [ventas, setVentas] = useState([]); // ventas de la página actual
+  const [pagina, setPagina] = useState(1); // la API manda de a 10 ventas por página
+  const [total, setTotal] = useState(null); // cantidad total de ventas
   const [haySiguiente, setHaySiguiente] = useState(false);
   const [hayAnterior, setHayAnterior] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
+  // Pide las ventas a la API cada vez que cambia "pagina"
   useEffect(() => {
     let cancelado = false;
 
@@ -22,13 +24,13 @@ export default function VentasPage() {
       setError("");
 
       try {
-        const data = await listarVentas(pagina);
+        const data = await listarVentas(pagina); // GET ventas/?page=N
 
         if (cancelado) return;
 
-        setVentas(data.results ?? []);
+        setVentas(data.results ?? []); // la API responde { count, next, previous, results }
         setTotal(data.count ?? null);
-        setHaySiguiente(Boolean(data.next));
+        setHaySiguiente(Boolean(data.next)); // si hay "next", se habilita Siguiente
         setHayAnterior(Boolean(data.previous));
       } catch (err) {
         if (!cancelado) {
@@ -50,43 +52,58 @@ export default function VentasPage() {
   }, [pagina]);
 
   return (
-    <section>
-      <div>
-        <h2>
-          Listado de ventas{total !== null && ` (${total})`}
+    <section className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h2 className="flex items-center gap-3 text-xl font-semibold">
+          Listado de ventas
+          {total !== null && <span className="badge">{total}</span>}
         </h2>
-        <Link href="/ventas/create">
+        <Link href="/ventas/create" className="btn btn-primary">
+          <Icon name="mas" className="size-4" />
           Nueva venta
         </Link>
       </div>
 
       {error && (
-        <p role="alert">
+        <p role="alert" className="alert-error">
           {error}
         </p>
       )}
 
+      {/* cargando → tarjetas grises; sin ventas → mensaje; con ventas → la grilla */}
       {cargando ? (
-        <p>Cargando ventas...</p>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((n) => (
+            <div key={n} className="skeleton h-40" />
+          ))}
+        </div>
       ) : !error && ventas.length === 0 ? (
-        <p>Todavía no hay ventas cargadas.</p>
+        <div className="card flex flex-col items-center gap-3 px-6 py-16 text-center">
+          <Icon name="recibo" className="size-10 text-muted-foreground" />
+          <p className="font-medium">Todavía no hay ventas cargadas.</p>
+          <Link href="/ventas/create" className="btn btn-primary btn-sm">
+            Cargar la primera
+          </Link>
+        </div>
       ) : !error ? (
         <>
-          <div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {ventas.map((venta) => (
               <VentaCard key={venta.id} venta={venta} />
             ))}
           </div>
 
-          <div>
-            <p>Página {pagina}</p>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground">Página {pagina}</p>
 
-            <div>
+            <div className="flex gap-2">
               <button
                 type="button"
                 disabled={!hayAnterior || cargando}
                 onClick={() => setPagina((prev) => Math.max(1, prev - 1))}
+                className="btn btn-secondary btn-sm"
               >
+                <Icon name="izquierda" className="size-4" />
                 Anterior
               </button>
 
@@ -94,8 +111,10 @@ export default function VentasPage() {
                 type="button"
                 disabled={!haySiguiente || cargando}
                 onClick={() => setPagina((prev) => prev + 1)}
+                className="btn btn-secondary btn-sm"
               >
                 Siguiente
+                <Icon name="derecha" className="size-4" />
               </button>
             </div>
           </div>

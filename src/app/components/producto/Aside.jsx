@@ -22,19 +22,22 @@ function CategoryFilters({ filters, setFilters, category, name }) {
 
   return (
     <div>
-      <h1 className='text-2xl font-semibold'>
+      <h3 className='mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase'>
         {name.replace(/^./, char => char.toUpperCase())}
-      </h1>
+      </h3>
 
-      <div className={'grid'}>
-        <ul className='overflow-hidden'>
+      <div className='grid'>
+        <ul className='flex flex-col gap-0.5'>
           {category.map((value, index) => (
             <li
               key={index}
               onClick={() => changeFilter(value.id)}
               className={
-                `pl-4 cursor-pointer transition-all duration-200 hover:scale-105 
-                ${filters[name] === value.id && 'text-lime-500'}`
+                `cursor-pointer rounded-lg px-3 py-1.5 text-sm transition-colors ${
+                  filters[name] === value.id
+                    ? 'bg-accent font-medium text-accent-foreground'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                }`
               }
             >
               <p>{value.nombre}{value.tipo}</p>
@@ -44,7 +47,7 @@ function CategoryFilters({ filters, setFilters, category, name }) {
             <li
               key={0}
               onClick={() => changeFilter('')}
-              className="pl-4 cursor-pointer transition-all duration-200 hover:scale-105 flex items-center gap-2 hover:text-red-400"
+              className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-destructive transition-colors hover:bg-destructive/10"
             >
               <Minus />
               <p>Limpiar filtro</p>
@@ -52,7 +55,7 @@ function CategoryFilters({ filters, setFilters, category, name }) {
           }
           {
             category.length === 0 && (
-              <li className='text-sm text-zinc-400 p-3'>
+              <li className='px-3 py-1.5 text-sm text-muted-foreground'>
                 No hay {name}
               </li>
             )
@@ -76,19 +79,20 @@ function SearchFilter({ setFilters }) {
   }
 
   return (
-    <form className="flex gap-2 items-center" onSubmit={changeFilter}>
+    <form className="mt-5 flex items-center gap-2" onSubmit={changeFilter}>
 
-      <div className='relative w-full my-4'>
+      <div className='relative w-full'>
         <input
           type="text"
           placeholder='Producto, Fabricante'
-          className='focus:outline-none p-2 focus:ring-2 ring-purple-400 rounded bg-zinc-600'
+          className='input'
+          aria-label='Buscar productos'
           onChange={(e) => searchValue = e.target.value}
         />
       </div>
 
-      <button type="submit" className="cursor-pointer bg-zinc-300 p-3 rounded">
-        <svg width="16" height="16" fill="currentColor" className="bi bi-search  text-zinc-600" viewBox="0 0 16 16">
+      <button type="submit" className="btn btn-primary btn-icon shrink-0" aria-label="Buscar">
+        <svg width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
           <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
         </svg>
       </button>
@@ -100,14 +104,14 @@ function SearchFilter({ setFilters }) {
 export default function Aside({ filters, setFilters }) {
 
   return (
-    <aside className="w-72 py-8 px-6 border-r border-zinc-700">
+    <aside className="card w-full shrink-0 p-5 lg:sticky lg:top-24 lg:w-64">
       <div>
-        <h1 className="text-2xl font-bold">Filtros</h1>
+        <h2 className="text-lg font-semibold">Filtros</h2>
       </div>
 
       <SearchFilter setFilters={setFilters} />
 
-      <div className="space-y-6 mt-8">
+      <div className="mt-6 space-y-6">
         <CategoryFilters filters={filters} setFilters={setFilters} category={tipos} name={'tipo'} />
         <CategoryFilters filters={filters} setFilters={setFilters} category={fabricantes} name={'fabricante'} />
         <CategoryFilters filters={filters} setFilters={setFilters} category={colores} name={'color'} />
