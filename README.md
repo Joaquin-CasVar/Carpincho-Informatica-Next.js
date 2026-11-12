@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Carpincho Informática Web App
 
-## Getting Started
+Aplicación frontend de una tienda de informática y hardware.
+Sus funcionalidades incluyen listado, carga, actualización y borrado de productos, ventas y usuarios (Tanto vendedores como clientes). También tiene un panel de administración para gestión.
 
-First, run the development server:
+## Integrantes
+- [Valentino Alcaraz](https://github.com/Alquita)
+- [Joaquín Castellano](https://github.com/Joaquin-CasVar)
+- [Esteban Ordoñez](https://github.com/estebanordonezz)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Despliegue en Vercel
+La aplicacione esta desplegada a través de [Vercel](https://carpincho-informatica-next-js.vercel.app/)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### API backend que consume el projecto
+[Repositorio](https://github.com/Joaquin-CasVar/Carpincho-Informatica-API) - [Despliegue en Render](https://carpincho-informatica-api.onrender.com)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### Prerrequisitos
+- [Node.js](https://nodejs.org/en/download)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Pasos para ejecutar la applicación localmente
+1. Clonar repositorio `https://github.com/Joaquin-CasVar/Carpincho-Informatica-Next.js.git`
+2. Ingresar al directorio clonado `cd Carpincho-Informatica-Next.js/`
+3. Instalar dependencias `npm install`
+4. Correr proyecto `npm run dev`
+5. Dirigirse a `localhost:3000`
 
-## Learn More
+#### Varialbles de entorno necesarias
+Las variables de entorno estan en el archivo `.env.example` del repositorio
 
-To learn more about Next.js, take a look at the following resources:
+#### Tablero Kanban de organización del proyecto
+[GitHub Projects](https://github.com/users/Joaquin-CasVar/projects/6/views/1)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Pasos para correr los tests
+Si todavía no tenes el repositorio en tu PC con las dependencias instaladas:
+1. Clonar repositorio `https://github.com/Joaquin-CasVar/Carpincho-Informatica-Next.js.git`
+2. Ingresar al directorio clonado `cd Carpincho-Informatica-Next.js/`
+3. Instalar dependencias `npm install`
+4. Correr tests `npm run test`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Si ya tenes el repositorio
+1. Correr tests `npm run test`
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Aplicación Funcionando
+#### / (Ruta Base) 
+##### Tema claro
+![Ruta Base Modo Claro](https://i.imgur.com/y5DcB5J.png)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+##### Tema oscuro
+![Ruta Base Modo Oscuro](https://i.imgur.com/q7g7zpz.png)
+
+#### /productos
+![productos](https://i.imgur.com/Vox3oCa.png)
+
+#### /productos/[id] (Detalle)
+![productos-detalle](https://i.imgur.com/L5I4cpe.png)
+
+#### /productos/cargar (Para carga y edición)
+![productos-cargar](https://i.imgur.com/RTTObIx.png)
+
+#### /ventas
+![ventas](https://i.imgur.com/AJUWhHj.png)
+
+#### /account/register
+![Registro](https://i.imgur.com/htUhMty.png)
+
+#### /account/login
+![Inicio Sesion](https://i.imgur.com/xOZZdAj.png)
+
+#### /estadisticas
+![estadisticas](https://i.imgur.com/0rDKTlr.png)
+
+#### /about
+![about](https://i.imgur.com/cJmMKbc.png)

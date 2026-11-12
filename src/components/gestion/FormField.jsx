@@ -15,7 +15,7 @@ export default function FormField({
 
     return (
         <div>
-        <label htmlFor={inputId} className="mb-1 block">
+        <label htmlFor={inputId} className="label">
             {label}
         </label>
 
@@ -30,14 +30,14 @@ export default function FormField({
             disabled={disabled}
             aria-invalid={Boolean(error)}
             aria-describedby={error ? `${inputId}-error` : undefined}
-            className="w-full rounded border p-2 disabled:opacity-50"
+            className="input"
         />
 
         {error && (
             <p
             id={`${inputId}-error`}
             role="alert"
-            className="mt-1 text-sm text-red-500"
+            className="field-error"
             >
             {error}
             </p>

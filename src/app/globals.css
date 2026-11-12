@@ -1,26 +1,241 @@
 @import "tailwindcss";
 
+/* El modo oscuro lo controla la clase "dark" del <html> (ThemeContext),
+   no la configuración del sistema. Así todos los "dark:" obedecen al botón. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   Colores del tema "Carpincho cálido"
+   Se usan por nombre (bg-card, text-muted-foreground, bg-primary...) y cambian
+   solos entre claro y oscuro.
+--------------------------------------------------------------------------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: oklch(0.99 0.004 75);
+  --foreground: oklch(0.216 0.006 56);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.216 0.006 56);
+  --muted: oklch(0.965 0.005 75);
+  --muted-foreground: oklch(0.47 0.012 60);
+  --border: oklch(0.915 0.006 60);
+  --input: oklch(0.64 0.013 58);
+  --primary: oklch(0.55 0.155 52);
+  --primary-foreground: oklch(0.99 0.004 75);
+  --accent: oklch(0.954 0.038 75);
+  --accent-foreground: oklch(0.47 0.13 50);
+  --destructive: oklch(0.53 0.22 27.5);
+  --destructive-foreground: oklch(0.99 0.004 75);
+  --success: oklch(0.527 0.154 150);
+  --warning: oklch(0.555 0.163 49);
+  --ring: oklch(0.55 0.155 52);
+}
+
+.dark {
+  --background: oklch(0.16 0.008 55);
+  --foreground: oklch(0.96 0.006 75);
+  --card: oklch(0.205 0.009 55);
+  --card-foreground: oklch(0.96 0.006 75);
+  --muted: oklch(0.25 0.01 55);
+  --muted-foreground: oklch(0.72 0.012 60);
+  --border: oklch(0.3 0.011 55);
+  --input: oklch(0.56 0.014 58);
+  --primary: oklch(0.77 0.16 60);
+  --primary-foreground: oklch(0.18 0.02 50);
+  --accent: oklch(0.28 0.05 50);
+  --accent-foreground: oklch(0.86 0.11 68);
+  --destructive: oklch(0.75 0.16 22);
+  --destructive-foreground: oklch(0.18 0.02 50);
+  --success: oklch(0.792 0.209 151.7);
+  --warning: oklch(0.828 0.189 84.4);
+  --ring: oklch(0.77 0.16 60);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-ring: var(--ring);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ---------------------------------------------------------------------------
+   Estilos base
+--------------------------------------------------------------------------- */
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  ::selection {
+    background: color-mix(in oklch, var(--primary) 30%, transparent);
+  }
+
+  :focus-visible {
+    outline-color: var(--ring);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ---------------------------------------------------------------------------
+   Clases reutilizables (botones, tarjetas, formularios, tablas...)
+--------------------------------------------------------------------------- */
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+  }
+
+  .page-title {
+    @apply text-3xl font-semibold tracking-tight text-balance sm:text-4xl;
+  }
+
+  .page-subtitle {
+    @apply mt-2 text-base text-muted-foreground;
+  }
+
+  /* Botones */
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-all duration-150 select-none focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply border border-border bg-card text-foreground shadow-xs hover:bg-muted active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply text-muted-foreground hover:bg-muted hover:text-foreground;
+  }
+
+  .btn-danger {
+    @apply bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 active:scale-[0.98];
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+
+  .btn-icon {
+    @apply size-9 p-0;
+  }
+
+  /* Tarjetas */
+  .card {
+    @apply rounded-2xl border border-border bg-card text-card-foreground shadow-sm;
+  }
+
+  .card-hover {
+    @apply transition duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg;
+  }
+
+  /* Formularios */
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-foreground;
+  }
+
+  .input {
+    @apply block w-full rounded-lg border border-input bg-card px-3 py-2.5 text-sm text-foreground shadow-xs transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-3 focus:ring-ring/25 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:border-destructive aria-invalid:ring-destructive/20;
+  }
+
+  .field-error {
+    @apply mt-1.5 text-sm text-destructive;
+  }
+
+  .alert-error {
+    @apply rounded-lg border border-destructive/30 bg-destructive/8 px-4 py-3 text-sm text-destructive;
+  }
+
+  .alert-success {
+    @apply rounded-lg border border-success/30 bg-success/8 px-4 py-3 text-sm text-success;
+  }
+
+  /* Etiquetas chicas */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-accent-foreground;
+  }
+
+  /* Tablas */
+  .table-wrap {
+    @apply overflow-x-auto rounded-2xl border border-border bg-card shadow-sm;
+  }
+
+  .data-table {
+    @apply w-full text-left text-sm;
+  }
+
+  .data-table thead {
+    @apply border-b border-border bg-muted/60 text-xs tracking-wide text-muted-foreground uppercase;
+  }
+
+  .data-table th {
+    @apply px-4 py-3 font-medium;
+  }
+
+  .data-table td {
+    @apply px-4 py-3 align-middle;
+  }
+
+  .data-table tbody tr {
+    @apply border-b border-border transition-colors last:border-b-0 hover:bg-muted/40;
+  }
+
+  .link {
+    @apply font-medium text-primary underline-offset-4 hover:underline;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-lg bg-muted;
+  }
+
+  /* Cuadrícula de fondo del inicio */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, var(--border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    background-size: 3.5rem 3.5rem;
+    mask-image: radial-gradient(ellipse at center, black 15%, transparent 70%);
+  }
 }

@@ -8,6 +8,8 @@ import {
   verificarAdministrador,
 } from '@/lib/api';
 import { loginSchema } from '@/schemas/loginSchema';
+import Link from 'next/link';
+import { LogoMarca } from '@/components/Logo';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -91,8 +93,9 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="mx-auto max-w-md p-6">
-      <h1 className="mb-6 text-3xl font-bold">
+    <main className="card mx-4 my-12 p-6 sm:mx-auto sm:w-full sm:max-w-md sm:p-8">
+      <LogoMarca className="mb-6 size-12" />
+      <h1 className="page-title mb-6">
         Iniciar sesión
       </h1>
 
@@ -102,7 +105,7 @@ export default function LoginPage() {
         className="space-y-4"
       >
         <div>
-          <label htmlFor="username" className="mb-1 block">
+          <label htmlFor="username" className="label">
             Nombre de usuario
           </label>
 
@@ -114,18 +117,18 @@ export default function LoginPage() {
             value={form.username}
             onChange={handleChange}
             aria-invalid={Boolean(errores.username)}
-            className="w-full rounded border p-2"
+            className="input"
           />
 
           {errores.username && (
-            <p className="mt-1 text-sm text-red-500">
+            <p className="field-error">
               {errores.username}
             </p>
           )}
         </div>
 
         <div>
-          <label htmlFor="password" className="mb-1 block">
+          <label htmlFor="password" className="label">
             Contraseña
           </label>
 
@@ -137,18 +140,18 @@ export default function LoginPage() {
             value={form.password}
             onChange={handleChange}
             aria-invalid={Boolean(errores.password)}
-            className="w-full rounded border p-2"
+            className="input"
           />
 
           {errores.password && (
-            <p className="mt-1 text-sm text-red-500">
+            <p className="field-error">
               {errores.password}
             </p>
           )}
         </div>
 
         {errorAPI && (
-          <p role="alert" className="text-red-500">
+          <p role="alert" className="alert-error">
             {errorAPI}
           </p>
         )}
@@ -156,10 +159,17 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded bg-blue-600 p-3 text-white disabled:opacity-50"
+          className="btn btn-primary w-full"
         >
           {loading ? 'Ingresando...' : 'Iniciar sesión'}
         </button>
+
+        <p className="text-center text-sm text-muted-foreground">
+          ¿No tenés cuenta?{' '}
+          <Link href="/account/register" className="link">
+            Registrate
+          </Link>
+        </p>
       </form>
     </main>
   );

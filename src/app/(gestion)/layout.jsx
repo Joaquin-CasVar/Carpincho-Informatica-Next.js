@@ -2,12 +2,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { verificarAdministrador } from '@/lib/api';
 
 export default function GestionLayout({ children }) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const [autorizado, setAutorizado] = useState(false);
   const [error, setError] = useState('');
@@ -62,42 +63,61 @@ export default function GestionLayout({ children }) {
   
   if (error) {
     return (
-      <p role="alert" className="p-6 text-red-500">
-        {error}
-      </p>
+      <div className="container-page py-10">
+        <p role="alert" className="alert-error">
+          {error}
+        </p>
+      </div>
     );
   }
 
   if (!autorizado) {
-    return <p className="p-6">Verificando permisos...</p>;
+    return (
+      <p className="container-page flex items-center gap-2 py-16 text-sm text-muted-foreground">
+        <span className="size-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        Verificando permisos...
+      </p>
+    );
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b p-4">
-        <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
-          <Link href="/admin" className="text-xl font-bold">
+    <div className="container-page flex flex-1 flex-col gap-8 py-10">
+      <header className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-muted/40 p-2">
+        <nav className="flex flex-wrap items-center gap-1">
+          <Link href="/admin" className="mr-2 flex items-center gap-2 px-3 py-1.5 text-sm font-semibold">
+            <span className="size-2 rounded-full bg-primary" />
             Carpincho Admin
           </Link>
-
-          <div className="flex flex-wrap items-center gap-4">
-            <Link href="/admin">Inicio</Link>
-            <Link href="/usuarios">Usuarios</Link>
-            <Link href="/clientes">Clientes</Link>
-            <Link href="/vendedores">Vendedores</Link>
-
-            <button
-              type="button"
-              onClick={cerrarSesion}
-              className="rounded bg-red-600 px-4 py-2 text-white"
+          {[
+            { href: '/admin', label: 'Inicio' },
+            { href: '/usuarios', label: 'Usuarios' },
+            { href: '/clientes', label: 'Clientes' },
+            { href: '/vendedores', label: 'Vendedores' },
+          ].map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                pathname === link.href || (link.href !== '/admin' && pathname.startsWith(link.href))
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
-              Cerrar sesión
-            </button>
-          </div>
+              {link.label}
+            </Link>
+          ))}
         </nav>
+
+        <button
+          type="button"
+          onClick={cerrarSesion}
+          className="btn btn-secondary btn-sm"
+        >
+          Cerrar sesión
+        </button>
       </header>
 
-      <div className="mx-auto max-w-6xl p-6">
+      <div>
         {children}
       </div>
     </div>

@@ -65,7 +65,7 @@ export default function UsuarioSelect({
 
     return (
         <div>
-        <label htmlFor="personaId" className="mb-1 block">
+        <label htmlFor="personaId" className="label">
             Usuario asociado
         </label>
 
@@ -78,7 +78,7 @@ export default function UsuarioSelect({
             aria-describedby={
             error ? 'personaId-error' : undefined
             }
-            className="w-full rounded border p-2 disabled:opacity-50"
+            className="input"
         >
             <option value="">
             {cargando
@@ -106,20 +106,20 @@ export default function UsuarioSelect({
             <p
             id="personaId-error"
             role="alert"
-            className="mt-1 text-sm text-red-500"
+            className="field-error"
             >
             {error}
             </p>
         )}
 
         {errorCarga && (
-            <p role="alert" className="mt-1 text-sm text-red-500">
+            <p role="alert" className="field-error">
             {errorCarga}
             </p>
         )}
 
         {!cargando && !errorCarga && usuarios.length === 0 && (
-            <p className="mt-1 text-sm opacity-70">
+            <p className="mt-1 text-sm text-muted-foreground">
             No hay usuarios disponibles.
             </p>
         )}

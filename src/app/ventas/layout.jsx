@@ -1,16 +1,24 @@
-"use client";
+"use client"; // usa hooks y sessionStorage, por eso es componente cliente
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Icon from "@/components/Icon";
+
+const pestanas = [
+  { href: "/ventas", label: "Listado", icono: "recibo" },
+  { href: "/ventas/create", label: "Nueva venta", icono: "mas" },
+];
 
 // Layout anidado de la sección /ventas. Solo se entra con sesión iniciada.
 export default function VentasLayout({ children }) {
   const router = useRouter();
-  const [autorizado, setAutorizado] = useState(false);
+  const pathname = usePathname(); // ruta actual, para resaltar la pestaña activa
+  const [autorizado, setAutorizado] = useState(false); // pasa a true si hay sesión
 
+  // Al entrar a /ventas: si no hay token, manda al login
   useEffect(() => {
-    let cancelado = false;
+    let cancelado = false; // evita actualizar el estado si ya se salió de la página
 
     async function comprobarAcceso() {
       const token = sessionStorage.getItem("access");
@@ -32,23 +40,40 @@ export default function VentasLayout({ children }) {
     };
   }, [router]);
 
-  if (!autorizado) {
-    return <p>Verificando sesión...</p>;
+  if (!autorizado) { // mientras verifica, no muestra la sección
+    return (
+      <p className="container-page flex items-center gap-2 py-16 text-sm text-muted-foreground">
+        <span className="size-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        Verificando sesión...
+      </p>
+    );
   }
 
   return (
-    <div>
-      <div>
-        <h1>Ventas</h1>
-        <nav>
-          <Link href="/ventas">
-            Listado
-          </Link>
-          <Link href="/ventas/create">
-            Nueva venta
-          </Link>
+    <div className="container-page flex flex-1 flex-col gap-8 py-10">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
+        <div>
+          <h1 className="page-title">Ventas</h1>
+          <p className="page-subtitle">Registrá y consultá las ventas de la tienda.</p>
+        </div>
+        <nav className="flex max-w-full gap-1 overflow-x-auto rounded-xl border border-border bg-muted/50 p-1">
+          {pestanas.map((pestana) => (
+            <Link
+              key={pestana.href}
+              href={pestana.href}
+              className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors ${
+                pathname === pestana.href
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Icon name={pestana.icono} className="size-4" />
+              {pestana.label}
+            </Link>
+          ))}
         </nav>
       </div>
+      {/* acá aparece la página que toque: listado, detalle, crear o editar */}
       {children}
     </div>
   );

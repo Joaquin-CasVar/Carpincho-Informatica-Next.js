@@ -81,86 +81,83 @@ export default function UsuariosPage() {
     <main className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">
+          <h1 className="page-title">
             Gestión de usuarios
           </h1>
 
-          <p className="mt-2">
+          <p className="page-subtitle">
             Consultá y administrá los usuarios del sistema.
           </p>
         </div>
 
         <Link
           href="/usuarios/nuevo"
-          className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+          className="btn btn-primary"
         >
           + Nuevo usuario
         </Link>
       </div>
 
       {mensaje && (
-        <p role="status" className="text-green-600">
+        <p role="status" className="alert-success">
           {mensaje}
         </p>
       )}
 
       {error && (
-        <p role="alert" className="text-red-500">
+        <p role="alert" className="alert-error">
           {error}
         </p>
       )}
 
       {cargando ? (
-        <p>Cargando usuarios...</p>
+        <p className="text-sm text-muted-foreground">Cargando usuarios...</p>
       ) : !error && usuarios.length === 0 ? (
-        <p>No hay usuarios registrados.</p>
+        <p className="text-sm text-muted-foreground">No hay usuarios registrados.</p>
       ) : !error ? (
         <>
-          <div className="overflow-x-auto rounded-lg border">
-            <table className="w-full border-collapse text-left">
-              <thead className="border-b bg-gray-100 text-gray-900">
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
                 <tr>
-                  <th className="p-3">ID</th>
-                  <th className="p-3">Usuario</th>
-                  <th className="p-3">Nombre</th>
-                  <th className="p-3">Email</th>
-                  <th className="p-3">Teléfono</th>
-                  <th className="p-3">Acciones</th>
+                  <th>ID</th>
+                  <th>Usuario</th>
+                  <th>Nombre</th>
+                  <th>Email</th>
+                  <th>Teléfono</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
 
               <tbody>
                 {usuarios.map((usuario) => (
-                  <tr
-                    key={usuario.id}
-                    className="border-b last:border-b-0"
-                  >
-                    <td className="p-3">
+                  <tr key={usuario.id}>
+                    <td>
                       {usuario.id}
                     </td>
 
-                    <td className="p-3">
+                    <td>
                       {usuario.username}
                     </td>
 
-                    <td className="p-3">
+                    <td>
                       {usuario.first_name}{' '}
                       {usuario.last_name}
                     </td>
 
-                    <td className="p-3">
+                    <td>
                       {usuario.email || '-'}
                     </td>
 
-                    <td className="p-3">
+                    <td>
                       {usuario.telefono || '-'}
                     </td>
 
-                    <td className="p-3">
+                    <td>
                       <div className="flex flex-wrap items-center gap-4">
                         <Link
                           href={`/usuarios/${usuario.id}/editar`}
-                          className="font-medium text-blue-500 hover:underline"
+                          className="link"
                         >
                           Editar
                         </Link>

@@ -36,11 +36,11 @@ export default function FAQPage() {
   return (
     <main className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">
+        <h1 className="page-title">
           Preguntas frecuentes
         </h1>
 
-        <p className="mt-2">
+        <p className="page-subtitle">
           Encontrá respuestas a las consultas más comunes.
         </p>
       </div>
@@ -49,7 +49,7 @@ export default function FAQPage() {
         {preguntas.map((item) => (
           <details
             key={item.pregunta}
-            className="rounded-lg border p-4"
+            className="card p-5"
           >
             <summary className="cursor-pointer font-semibold">
               {item.pregunta}

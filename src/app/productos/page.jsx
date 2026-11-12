@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import ProductoCard from "../components/producto/ProductoCard";
 import Aside from "../components/producto/Aside";
+import Icon from "@/components/Icon";
 
 export default function page() {
   const [productos, setProductos] = useState([])
@@ -56,44 +57,48 @@ export default function page() {
   }, [filters])
 
   return (
-    <div className="w-full">
-      <div className="w-full border-b border-zinc-700 pb-4">
-        <h1 className="text-9xl">Productos</h1>
-        <Link href='/productos/cargar' className="m-2 p-2 border-2 rounded-2xl">
+    <div className="container-page flex flex-col gap-8 py-10">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
+        <div>
+          <h1 className="page-title">Productos</h1>
+          <p className="page-subtitle">Componentes, periféricos y notebooks.</p>
+        </div>
+        <Link href='/productos/cargar' className="btn btn-primary">
+          <Icon name="mas" className="size-4" />
           Cargar producto
         </Link>
       </div>
 
-      <div className="flex min-h-screen">
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
         <Aside filters={filters} setFilters={setFilters} />
 
-        <div className="px-4 w-full">
-          <div className="flex justify-between items-center pt-4">
-            <div className="flex items-center">
+        <div className="flex min-w-0 flex-1 flex-col gap-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => setFilters({ ...filters, page: filters.page - 1 })}
                 disabled={!pages.prev}
-                className="cursor-pointer disabled:cursor-default disabled:text-zinc-500 enabled:hover:scale-105"
+                className="btn btn-secondary btn-icon"
+                aria-label="Página anterior"
               >
-                <svg width="32" height="32" fill="currentColor" className="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                  <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
-                </svg>
+                <Icon name="izquierda" />
               </button>
               <button
                 onClick={() => setFilters({ ...filters, page: filters.page + 1 })}
                 disabled={!pages.next}
-                className="cursor-pointer disabled:cursor-default disabled:text-zinc-500 enabled:hover:scale-105"
+                className="btn btn-secondary btn-icon"
+                aria-label="Página siguiente"
               >
-                <svg width="32" height="32" fill="currentColor" className="bi bi-caret-right-fill" viewBox="0 0 16 16">
-                  <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
-                </svg>
+                <Icon name="derecha" />
               </button>
+              <span className="text-sm text-muted-foreground">Página {filters.page}</span>
             </div>
 
             <select
-              className="cursor-pointer p-2 border border-zinc-600 rounded-md my-4"
+              className="input w-auto cursor-pointer"
               value={filters.ordering}
               onChange={(e) => setFilters({...filters, ordering: e.target.value})}
+              aria-label="Ordenar productos"
             >
               <option value="">Más Relevantes</option>
               <option value="precio">Menor Precio</option>
@@ -101,12 +106,24 @@ export default function page() {
             </select>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 pt-4">
-            {productos.map((producto, key) => (
-              <ProductoCard key={key} producto={producto} />
-            ))}
-
-          </div>
+          {loading ? (
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {[1, 2, 3, 4, 5, 6].map((n) => (
+                <div key={n} className="skeleton h-72" />
+              ))}
+            </div>
+          ) : productos.length === 0 ? (
+            <div className="card flex flex-col items-center gap-3 px-6 py-16 text-center">
+              <Icon name="caja" className="size-10 text-muted-foreground" />
+              <p className="font-medium">No hay productos con esos filtros.</p>
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {productos.map((producto, key) => (
+                <ProductoCard key={key} producto={producto} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

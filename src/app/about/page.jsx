@@ -5,11 +5,11 @@ export default function AboutPage() {
   return (
     <main className="space-y-8">
       <section className="space-y-4">
-        <h1 className="text-3xl font-bold">
+        <h1 className="page-title">
           Sobre Carpincho Informática
         </h1>
 
-        <p className="text-lg">
+        <p className="text-lg text-muted-foreground">
           Carpincho Informática es una tienda dedicada
           a la comercialización de computadoras,
           componentes y accesorios tecnológicos.
@@ -25,7 +25,7 @@ export default function AboutPage() {
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
-        <article className="rounded-lg border p-5">
+        <article className="card p-6">
           <h2 className="mb-2 text-xl font-semibold">
             Productos
           </h2>
@@ -35,7 +35,7 @@ export default function AboutPage() {
           </p>
         </article>
 
-        <article className="rounded-lg border p-5">
+        <article className="card p-6">
           <h2 className="mb-2 text-xl font-semibold">
             Tecnología
           </h2>
@@ -45,7 +45,7 @@ export default function AboutPage() {
           </p>
         </article>
 
-        <article className="rounded-lg border p-5">
+        <article className="card p-6">
           <h2 className="mb-2 text-xl font-semibold">
             Atención
           </h2>
@@ -70,14 +70,14 @@ export default function AboutPage() {
         <div className="flex flex-wrap gap-4">
           <Link
             href="/about/faq"
-            className="rounded bg-blue-600 px-4 py-2 text-white"
+            className="btn btn-primary"
           >
             Preguntas frecuentes
           </Link>
 
           <Link
             href="/about/contacto"
-            className="rounded border px-4 py-2"
+            className="btn btn-secondary"
           >
             Contacto
           </Link>

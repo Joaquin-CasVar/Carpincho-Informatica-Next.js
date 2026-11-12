@@ -124,20 +124,20 @@ export default function EditarUsuarioPage({ params }) {
   }
 
   if (cargando) {
-    return <p className="p-6">Cargando usuario...</p>;
+    return <p className="flex items-center gap-2 py-6 text-sm text-muted-foreground">Cargando usuario...</p>;
   }
 
   if (!usuarioCargado) {
     return (
-      <p role="alert" className="p-6 text-red-500">
+      <p role="alert" className="alert-error">
         {error || 'No se encontró el usuario'}
       </p>
     );
   }
 
   return (
-    <main className="mx-auto max-w-lg p-6">
-      <h1 className="mb-6 text-2xl font-bold">
+    <main className="card mx-auto w-full max-w-lg p-6 sm:p-8">
+      <h1 className="mb-6 text-2xl font-semibold tracking-tight">
         Editar usuario #{id}
       </h1>
 
@@ -168,7 +168,7 @@ export default function EditarUsuarioPage({ params }) {
         </label>
 
         {error && (
-          <p role="alert" className="text-red-500">
+          <p role="alert" className="alert-error">
             {error}
           </p>
         )}
@@ -176,7 +176,7 @@ export default function EditarUsuarioPage({ params }) {
         <button
           type="submit"
           disabled={guardando}
-          className="w-full rounded bg-blue-600 p-3 text-white disabled:opacity-50"
+          className="btn btn-primary w-full"
         >
           {guardando ? 'Guardando...' : 'Guardar cambios'}
         </button>

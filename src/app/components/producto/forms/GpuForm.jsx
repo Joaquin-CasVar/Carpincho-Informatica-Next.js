@@ -34,12 +34,12 @@ export default function GpuForm({ form, detalle }) {
 
   return (
     <form>
-      <div className='mt-10 grid grid-cols-3 gap-3'>
+      <div className='grid gap-5 sm:grid-cols-2 lg:grid-cols-3'>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Tipo de Memoria<label className='text-sm text-red-800 animate-pulse'>{errors.tipo_memoria && "*" + errors.tipo_memoria.message}</label></p>
+          <p className='label'>Tipo de Memoria<label className='ml-1 text-xs font-normal text-destructive'>{errors.tipo_memoria && "*" + errors.tipo_memoria.message}</label></p>
           <select
-            className='cursor-pointer p-2 border border-zinc-600 rounded-md my-4'
+            className='input cursor-pointer'
             {...register("tipo_memoria", { valueAsNumber: true })}
           >
 
@@ -52,9 +52,9 @@ export default function GpuForm({ form, detalle }) {
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>GPU (Chipset)<label className='text-sm text-red-800 animate-pulse'>{errors.chipset && "*" + errors.chipset.message}</label></p>
+          <p className='label'>GPU (Chipset)<label className='ml-1 text-xs font-normal text-destructive'>{errors.chipset && "*" + errors.chipset.message}</label></p>
           <select
-            className='cursor-pointer p-2 border border-zinc-600 rounded-md my-4'
+            className='input cursor-pointer'
             {...register("chipset", { valueAsNumber: true })}
           >
 
@@ -67,9 +67,9 @@ export default function GpuForm({ form, detalle }) {
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Refrigeración<label className='text-sm text-red-800 animate-pulse'>{errors.refrigeracion && "*" + errors.refrigeracion.message}</label></p>
+          <p className='label'>Refrigeración<label className='ml-1 text-xs font-normal text-destructive'>{errors.refrigeracion && "*" + errors.refrigeracion.message}</label></p>
           <select
-            className='cursor-pointer p-2 border border-zinc-600 rounded-md my-4'
+            className='input cursor-pointer'
             {...register("refrigeracion", { valueAsNumber: true })}
           >
 
@@ -82,76 +82,76 @@ export default function GpuForm({ form, detalle }) {
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>GB de memoria <label className='text-sm text-red-800 animate-pulse'>{errors.memoria && "*" + errors.memoria.message}</label></p>
-          <div className='p-2 border border-zinc-600 rounded-md my-4'>
+          <p className='label'>GB de memoria <label className='ml-1 text-xs font-normal text-destructive'>{errors.memoria && "*" + errors.memoria.message}</label></p>
+          <div className='input flex items-center gap-2 focus-within:border-primary focus-within:ring-3 focus-within:ring-ring/25'>
             <input
               type="text"
               placeholder='Memoria'
-              className=''
+              className='w-full min-w-0 bg-transparent outline-none'
               {...register("memoria", { valueAsNumber: true })}
             />
-            <span>GB</span>
+            <span className='text-sm text-muted-foreground'>GB</span>
           </div>
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Frecuencia base <label className='text-sm text-red-800 animate-pulse'>{errors.velocidad_reloj && "*" + errors.velocidad_reloj.message}</label></p>
-          <div className='p-2 border border-zinc-600 rounded-md my-4'>
+          <p className='label'>Frecuencia base <label className='ml-1 text-xs font-normal text-destructive'>{errors.velocidad_reloj && "*" + errors.velocidad_reloj.message}</label></p>
+          <div className='input flex items-center gap-2 focus-within:border-primary focus-within:ring-3 focus-within:ring-ring/25'>
             <input
               type="text"
               placeholder='1010'
-              className=''
+              className='w-full min-w-0 bg-transparent outline-none'
               {...register("velocidad_reloj", { valueAsNumber: true })}
             />
-            <span>Mhz</span>
+            <span className='text-sm text-muted-foreground'>Mhz</span>
           </div>
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Frecuencia boost <label className='text-sm text-red-800 animate-pulse'>{errors.velocidad_boost && "*" + errors.velocidad_boost.message}</label></p>
-          <div className='p-2 border border-zinc-600 rounded-md my-4'>
+          <p className='label'>Frecuencia boost <label className='ml-1 text-xs font-normal text-destructive'>{errors.velocidad_boost && "*" + errors.velocidad_boost.message}</label></p>
+          <div className='input flex items-center gap-2 focus-within:border-primary focus-within:ring-3 focus-within:ring-ring/25'>
             <input
               type="text"
               placeholder='1210'
-              className=''
+              className='w-full min-w-0 bg-transparent outline-none'
               {...register("velocidad_boost", { valueAsNumber: true })}
             />
-            <span>Mhz</span>
+            <span className='text-sm text-muted-foreground'>Mhz</span>
           </div>
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Longitud <label className='text-sm text-red-800 animate-pulse'>{errors.longitud && "*" + errors.longitud.message}</label></p>
-          <div className='p-2 border border-zinc-600 rounded-md my-4'>
+          <p className='label'>Longitud <label className='ml-1 text-xs font-normal text-destructive'>{errors.longitud && "*" + errors.longitud.message}</label></p>
+          <div className='input flex items-center gap-2 focus-within:border-primary focus-within:ring-3 focus-within:ring-ring/25'>
             <input
               type="text"
               placeholder='100'
-              className=''
+              className='w-full min-w-0 bg-transparent outline-none'
               {...register("longitud", { valueAsNumber: true })}
             />
-            <span>mm</span>
+            <span className='text-sm text-muted-foreground'>mm</span>
           </div>
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>TDP <label className='text-sm text-red-800 animate-pulse'>{errors.tdp && "*" + errors.tdp.message}</label></p>
-          <div className='p-2 border border-zinc-600 rounded-md my-4'>
+          <p className='label'>TDP <label className='ml-1 text-xs font-normal text-destructive'>{errors.tdp && "*" + errors.tdp.message}</label></p>
+          <div className='input flex items-center gap-2 focus-within:border-primary focus-within:ring-3 focus-within:ring-ring/25'>
             <input
               type="text"
               placeholder='0'
-              className=''
+              className='w-full min-w-0 bg-transparent outline-none'
               {...register("tdp", { valueAsNumber: true })}
             />
-            <span>W</span>
+            <span className='text-sm text-muted-foreground'>W</span>
           </div>
         </div>
 
         <div className='flex flex-col'>
-          <p className='text-zinc-400 text-lg'>Slots que ocupa <label className='text-sm text-red-800 animate-pulse'>{errors.ancho_slots && "*" + errors.ancho_slots.message}</label></p>
+          <p className='label'>Slots que ocupa <label className='ml-1 text-xs font-normal text-destructive'>{errors.ancho_slots && "*" + errors.ancho_slots.message}</label></p>
           <input
             type="text"
             placeholder='1.1'
-            className='p-2 border border-zinc-600 rounded-md my-4'
+            className='input'
             {...register("ancho_slots", { valueAsNumber: true })}
           />
         </div>

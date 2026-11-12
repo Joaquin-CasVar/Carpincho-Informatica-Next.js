@@ -155,20 +155,38 @@ export default function page() {
   }
 
   return (
-    <div>
-      <h1 className="text-9xl">Cargar Producto</h1>
+    <div className="container-page flex flex-col gap-8 py-10">
+      <div className="border-b border-border pb-6">
+        <h1 className="page-title">Cargar producto</h1>
+        <p className="page-subtitle">
+          Completá los datos del producto. Si es un procesador o una placa de
+          video, también sus especificaciones.
+        </p>
+      </div>
 
-      {loading &&
-        <svg width="32" height="32" fill="currentColor" className="bi bi-circle-half animate-spin" viewBox="0 0 16 16">
-          <path d="M8 15A7 7 0 1 0 8 1zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16" />
-        </svg>
-      }
+      <section className="card p-6 sm:p-8">
+        <h2 className="mb-6 text-lg font-semibold">Datos del producto</h2>
+        <ProductoForm form={prodForm} producto={producto} />
+      </section>
 
-      <ProductoForm form={prodForm} producto={producto} />
-      {type === 1 && <CpuForm form={cpuForm} detalle={detalle} />}
-      {type === 2 && <GpuForm form={gpuForm} detalle={detalle} />}
+      {(type === 1 || type === 2) && (
+        <section className="card p-6 sm:p-8">
+          <h2 className="mb-6 text-lg font-semibold">
+            {type === 1 ? "Especificaciones del procesador" : "Especificaciones de la placa de video"}
+          </h2>
+          {type === 1 && <CpuForm form={cpuForm} detalle={detalle} />}
+          {type === 2 && <GpuForm form={gpuForm} detalle={detalle} />}
+        </section>
+      )}
 
-      <button type='button' onClick={onSubmit} className='bg-blue-500 text-white p-2 rounded-md'>Save</button>
+      <div className="flex items-center gap-3">
+        <button type='button' onClick={onSubmit} disabled={loading} className='btn btn-primary btn-lg'>
+          {loading ? "Guardando..." : "Guardar producto"}
+        </button>
+        {loading &&
+          <span className="size-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        }
+      </div>
     </div>
   )
 }

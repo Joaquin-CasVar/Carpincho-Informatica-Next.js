@@ -37,13 +37,13 @@ export default function BotonDesactivar({
             type="button"
             onClick={handleDesactivar}
             disabled={procesando}
-            className="font-medium text-red-600 hover:underline disabled:opacity-50"
+            className="cursor-pointer font-medium text-destructive hover:underline disabled:opacity-50"
         >
             {procesando ? 'Desactivando...' : 'Desactivar'}
         </button>
 
         {error && (
-            <span role="alert" className="text-xs text-red-600">
+            <span role="alert" className="text-xs text-destructive">
             {error}
             </span>
         )}
