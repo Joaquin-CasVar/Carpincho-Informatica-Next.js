@@ -1,27 +1,27 @@
 export const API_URL = process.env.NEXT_PUBLIC_API_URL; // Traigo url del back
 
 export const ENDPOINTS = {
-    fabricantes: 'fabricantes/',
-    colores: 'colores/',
-    tipos_producto: 'tipos-producto/',
-    arquitecturas: 'arquitecturas/',
-    sockets: 'sockets/',
-    chipsets_gpu: 'chipsets-gpu/',
-    tipos_memoria: 'tipos-memoria/',
-    refrigeraciones: 'refrigeraciones/',
+  fabricantes: 'fabricantes/',
+  colores: 'colores/',
+  tipos_producto: 'tipos-producto/',
+  arquitecturas: 'arquitecturas/',
+  sockets: 'sockets/',
+  chipsets_gpu: 'chipsets-gpu/',
+  tipos_memoria: 'tipos-memoria/',
+  refrigeraciones: 'refrigeraciones/',
 }
 async function list(path) {
-    let page = 1;
-    let all = []
-    while (true) {
-        const res = await fetch(`${API_URL}${path}?page=${page}`, { cache: "no-store" });
-        if (!res.ok) throw new Error(`La API respondió ${res.status} en ${path}`);
-        const data = await res.json();
-        if (Array.isArray(data)) return data;
-        all = all.concat(data.results ?? []);
-        if (!data.next) return all;
-        page += 1;
-    }
+  let page = 1;
+  let all = []
+  while (true) {
+    const res = await fetch(`${API_URL}${path}?page=${page}`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`La API respondió ${res.status} en ${path}`);
+    const data = await res.json();
+    if (Array.isArray(data)) return data;
+    all = all.concat(data.results ?? []);
+    if (!data.next) return all;
+    page += 1;
+  }
 }
 
 export const getFabricantes = () => list(ENDPOINTS.fabricantes)
@@ -502,8 +502,14 @@ export async function listarVendedores(pagina = 1) {
 
 // Función reutilizable para el borrado lógico
 async function desactivarRegistro(tipo, id) {
+  const token = sessionStorage.getItem('access');
+
+  if (!token) {
+    throw new Error('Tenés que iniciar sesión.');
+  }
+
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/${tipo}/${id}/`,
+    `${process.env.NEXT_PUBLIC_API_URL}${tipo}/${id}/`,
     {
       method: 'DELETE',
       headers: {
@@ -574,14 +580,14 @@ async function llamar(ruta, { method = 'GET', body } = {}) {
       ? data.detail
       : data
         ? Object.entries(data)
-            .map(([campo, mensajes]) => {
-              const texto = Array.isArray(mensajes)
-                ? mensajes.join(', ')
-                : String(mensajes);
+          .map(([campo, mensajes]) => {
+            const texto = Array.isArray(mensajes)
+              ? mensajes.join(', ')
+              : String(mensajes);
 
-              return `${campo}: ${texto}`;
-            })
-            .join(' | ')
+            return `${campo}: ${texto}`;
+          })
+          .join(' | ')
         : 'Error al comunicarse con la API';
 
     const error = new Error(mensaje);
