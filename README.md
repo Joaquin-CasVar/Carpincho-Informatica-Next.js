@@ -9,7 +9,7 @@ Sus funcionalidades incluyen listado, carga, actualización y borrado de product
 - [Esteban Ordoñez](https://github.com/estebanordonezz)
 
 ## Despliegue en Vercel
-La aplicacione esta desplegada a través de [Vercel](https://carpincho-informatica-next-js.vercel.app/)
+La aplicacione esta desplegada a través de [Vercel](https://carpincho-informatica-next-js-lemon.vercel.app)
 
 ### API backend que consume el projecto
 [Repositorio](https://github.com/Joaquin-CasVar/Carpincho-Informatica-API) - [Despliegue en Render](https://carpincho-informatica-api.onrender.com)
