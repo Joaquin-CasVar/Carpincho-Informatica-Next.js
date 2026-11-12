@@ -21,7 +21,7 @@ export default function page() {
   const [loading, setLoading] = useState(false)
 
   const router = useRouter();
-  
+
   const prodForm = useForm({
     resolver: zodResolver(productoSchema),
     defaultValues: producto ? {
@@ -98,7 +98,13 @@ export default function page() {
       detailURL = 'gpus'
     }
 
-    if (!prodFormIsValid || !detailFormIsValid) return;
+    console.log(detailFormData);
+    console.log(detailFormIsValid);
+    
+    if (!prodFormIsValid || !detailFormIsValid) {
+      setLoading(false)
+      return
+    }
 
     try {
       if (!producto) {

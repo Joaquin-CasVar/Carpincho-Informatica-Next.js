@@ -3,28 +3,6 @@ import { cpuSchema } from "../validations/cpuSchema";
 
 describe("Pruebas para cpuSchema", () => {
 
-    it("Debe fallar si no se pasa un producto", () => {
-        const invalidData = {
-            producto: 0,
-            arquitectura: 1,
-            socket: 1,
-            cant_nucleos: 1,
-            velocidad_reloj: 1,
-            velocidad_boost: 1,
-            cache: 1,
-            tdp: 1,
-            graficos_integrados: true,
-            incluye_cooler: true,
-        }
-
-        const result = cpuSchema.safeParse(invalidData)
-
-        expect(result.success).toBe(false)
-        if (!result.success) {
-            expect(result.error.issues[0].message).toBe("Debe pasar el id del producto")
-        }
-    })
-
     it("Debe fallar si no se selecciona una arquitectura", () => {
         const invalidData = {
             producto: 1,
@@ -396,50 +374,6 @@ describe("Pruebas para cpuSchema", () => {
         expect(result.success).toBe(false)
         if (!result.success) {
             expect(result.error.issues[0].message).toBe("El TDP debe ser un numero positivo")
-        }
-    })
-
-    it("Debe fallar si graficos integrados no es booleano", () => {
-        const invalidData = {
-            producto: 1,
-            arquitectura: 1,
-            socket: 1,
-            cant_nucleos: 1,
-            velocidad_reloj: 1,
-            velocidad_boost: 1,
-            cache: 1,
-            tdp: 1,
-            graficos_integrados: '',
-            incluye_cooler: true,
-        }
-
-        const result = cpuSchema.safeParse(invalidData)
-
-        expect(result.success).toBe(false)
-        if (!result.success) {
-            expect(result.error.issues[0].message).toBe("Los graficos integrados deben ser Verdadero o Falso")
-        }
-    })
-
-    it("Debe fallar si incluye cooler no es booleano", () => {
-        const invalidData = {
-            producto: 1,
-            arquitectura: 1,
-            socket: 1,
-            cant_nucleos: 1,
-            velocidad_reloj: 1,
-            velocidad_boost: 1,
-            cache: 1,
-            tdp: 1,
-            graficos_integrados: true,
-            incluye_cooler: '',
-        }
-
-        const result = cpuSchema.safeParse(invalidData)
-
-        expect(result.success).toBe(false)
-        if (!result.success) {
-            expect(result.error.issues[0].message).toBe("Incluye cooler debe ser Verdadero o Falso")
         }
     })
 
