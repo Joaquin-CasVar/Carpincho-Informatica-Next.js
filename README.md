@@ -43,26 +43,33 @@ Si ya tenes el repositorio
 ---
 
 # Aplicación Funcionando
-#### / (Ruta Base)
-![Ruta Base]()
+#### / (Ruta Base) 
+##### Tema claro
+![Ruta Base Modo Claro](https://i.imgur.com/y5DcB5J.png)
+
+##### Tema oscuro
+![Ruta Base Modo Oscuro](https://i.imgur.com/q7g7zpz.png)
 
 #### /productos
-![productos]()
+![productos](https://i.imgur.com/Vox3oCa.png)
 
 #### /productos/[id] (Detalle)
-![productos-detalle]()
+![productos-detalle](https://i.imgur.com/L5I4cpe.png)
 
 #### /productos/cargar (Para carga y edición)
-![productos-cargar]()
+![productos-cargar](https://i.imgur.com/RTTObIx.png)
 
 #### /ventas
-![ventas]()
+![ventas](https://i.imgur.com/AJUWhHj.png)
 
-#### /account
-![account]()
+#### /account/register
+![Registro](https://i.imgur.com/htUhMty.png)
+
+#### /account/login
+![Inicio Sesion](https://i.imgur.com/xOZZdAj.png)
 
 #### /estadisticas
-![estadisticas]()
+![estadisticas](https://i.imgur.com/0rDKTlr.png)
 
 #### /about
-![about]()
+![about](https://i.imgur.com/cJmMKbc.png)
