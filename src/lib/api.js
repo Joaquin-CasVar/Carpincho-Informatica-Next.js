@@ -541,6 +541,7 @@ export function desactivarCliente(id) {
 // Desactivar vendedor
 export function desactivarVendedor(id) {
   return desactivarRegistro('vendedores', id);
+}
 // ---------------------------------------------------------------------------
 // VENTAS
 // ---------------------------------------------------------------------------
